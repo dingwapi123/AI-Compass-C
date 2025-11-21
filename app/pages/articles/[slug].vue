@@ -46,7 +46,34 @@ const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
 /**
- * 加载当前文章文档
+ * 加载当前文章的 Supabase 元数据（标题/描述/作者/分类/时间）
+ */
+type ArticleRow = {
+  id: string
+  slug: string
+  title: string
+  description?: string
+  author_id?: string | null
+  category_id?: string | null
+  created_at?: string
+}
+
+async function fetchArticleBySlug(s: string): Promise<ArticleRow | null> {
+  const { get } = useSupabaseRest()
+  const rows = await get<ArticleRow[]>(
+    'articles',
+    { slug: `eq.${s}`, status: 'eq.published', select: 'id,slug,title,description,author_id,category_id,created_at', limit: 1 }
+  )
+  return rows?.[0] ?? null
+}
+
+const { data: article } = await useAsyncData<ArticleRow | null>(
+  `article:${slug.value}:meta`,
+  () => fetchArticleBySlug(slug.value)
+)
+
+/**
+ * 加载当前文章文档（正文渲染仍使用 Nuxt Content）
  */
 const { data: doc } = await useAsyncData<Doc | null>(
   `article:${slug.value}`,
@@ -56,24 +83,54 @@ const { data: doc } = await useAsyncData<Doc | null>(
 /**
  * 加载相关文章（同分类的最多三条）
  */
-const category = computed(() => doc.value?.category)
+const categoryId = computed(() => article.value?.category_id)
+const articleId = computed(() => article.value?.id)
 const { data: relatedRaw } = await useAsyncData<Doc[]>(
   `article:${slug.value}:related`,
-  () => queryCollection('articles')
-      .where('category', '=', category.value)
-      .order('date', 'DESC')
-      .limit(3)
-      .select('path', 'title', 'date', 'author', 'tags')
-      .all()
+  async () => {
+    const { get } = useSupabaseRest()
+    if (!categoryId.value) return []
+    const rows = await get<{
+      id: string
+      slug: string
+      title: string
+      created_at?: string
+      author_id?: string | null
+    }[]>(
+      'articles',
+      { category_id: `eq.${categoryId.value}`, status: 'eq.published', select: 'id,slug,title,created_at,author_id', order: 'created_at.desc' }
+    )
+    // 排除当前文章
+    const filtered = rows.filter(r => r.id !== articleId.value).slice(0, 3)
+
+    // 批量作者名
+    const authorIds = Array.from(new Set(filtered.map(r => r.author_id).filter(Boolean))) as string[]
+    const authors = authorIds.length
+      ? await get<{ id: string; name: string }[]>(
+          'authors',
+          { id: `in.(${authorIds.join(',')})`, select: 'id,name' }
+        )
+      : []
+    const authorMap = new Map(authors.map(a => [a.id, a.name]))
+
+    // 返回 PostCard 结构
+    return filtered.map(r => ({
+      path: `/articles/${r.slug}`,
+      title: r.title,
+      date: r.created_at,
+      author: r.author_id ? authorMap.get(r.author_id) : undefined,
+      tags: [],
+    }))
+  }
 )
 const related = computed(() => relatedRaw.value ?? [])
 
 /** 设置文章 SEO 元信息 */
 useSeoMeta({
-  title: () => `${doc.value?.title ?? '文章'} - AI Compass`,
-  description: () => doc.value?.description ?? '',
-  ogTitle: () => doc.value?.title ?? '文章',
-  ogDescription: () => doc.value?.description ?? '',
+  title: () => `${article.value?.title ?? doc.value?.title ?? '文章'} - AI Compass`,
+  description: () => article.value?.description ?? doc.value?.description ?? '',
+  ogTitle: () => article.value?.title ?? doc.value?.title ?? '文章',
+  ogDescription: () => article.value?.description ?? doc.value?.description ?? '',
 })
 
 /** 格式化日期 */

@@ -67,11 +67,40 @@ type PostCard = {
 }
 
 /**
- * 加载最新文章（前三条）
+ * 加载最新文章（从 Supabase 读取前三条）
  */
+async function fetchLatestArticles(count = 3): Promise<PostCard[]> {
+  const { get } = useSupabaseRest()
+  const rows = await get<{
+    id: string
+    slug: string
+    title: string
+    created_at?: string
+    author_id?: string | null
+  }[]>(
+    'articles',
+    { status: 'eq.published', select: 'id,slug,title,created_at,author_id', order: 'created_at.desc', limit: count }
+  )
+  const authorIds = Array.from(new Set(rows.map(r => r.author_id).filter(Boolean))) as string[]
+  const authors = authorIds.length
+    ? await get<{ id: string; name: string }[]>(
+        'authors',
+        { id: `in.(${authorIds.join(',')})`, select: 'id,name' }
+      )
+    : []
+  const authorMap = new Map(authors.map(a => [a.id, a.name]))
+  return rows.map(r => ({
+    path: `/articles/${r.slug}`,
+    title: r.title,
+    date: r.created_at,
+    author: r.author_id ? authorMap.get(r.author_id) : undefined,
+    tags: [],
+  }))
+}
+
 const { data: latestRaw } = await useAsyncData<PostCard[]>(
   'home:latest',
-  () => queryCollection('articles').order('date', 'DESC').limit(3).select('path', 'title', 'date', 'author', 'tags').all()
+  () => fetchLatestArticles(3)
 )
 const latest = computed<PostCard[]>(() => latestRaw.value ?? [])
 
