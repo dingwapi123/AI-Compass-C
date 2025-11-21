@@ -2,30 +2,74 @@
   <UContainer>
     <UPageHero
       title="AI Compass"
-      description="基于 Nuxt 4 + Nuxt UI 的生产级站点模板，优化 SSR 与 SEO，集成 Nuxt Content 作为内容系统。"
+      description="每日 AI 快讯 + 工具导航，基于 Nuxt 4 + Nuxt UI，预留 Supabase 数据源。"
       :links="[
-        { label: '开始阅读', to: '/articles', icon: 'i-lucide-book-open' },
-        {
-          label: '了解更多',
-          to: 'https://nuxt.com',
-          icon: 'i-lucide-external-link',
-        },
+        { label: '查看快讯', to: '/daily', icon: 'i-lucide-newspaper' },
+        { label: '工具导航', to: '/tools', icon: 'i-lucide-grid' },
+        { label: '文章教程', to: '/articles', icon: 'i-lucide-book-open' },
       ]"
-    />
+    >
+      <template #headline>
+        <div class="flex flex-col gap-3 md:flex-row">
+          <div class="flex flex-1 items-center gap-3 rounded-xl border border-neutral-200/60 bg-white/60 p-3 dark:border-neutral-800 dark:bg-neutral-900/70">
+            <UIcon name="i-lucide-search" class="text-neutral-500" />
+            <input
+              v-model="keyword"
+              type="text"
+              placeholder="搜索 AI 工具或快讯，例如：Claude、图像生成"
+              class="flex-1 bg-transparent text-sm outline-none placeholder:text-neutral-500"
+            />
+            <UButton icon="i-lucide-arrow-right" variant="solid" color="primary" :to="searchLink" :disabled="!keyword.trim()">搜索</UButton>
+          </div>
+        </div>
+      </template>
+    </UPageHero>
 
-    <UPageSection title="特色内容" description="为移动端与桌面端提供一致的体验">
+    <UPageSection title="今日快讯" description="最新 4 条 AI 新闻，深入阅读可前往每日快讯页">
+      <div class="grid gap-6 md:grid-cols-2">
+        <UCard v-for="item in topNews" :key="item.id">
+          <template #header>
+            <div class="flex items-start justify-between gap-2">
+              <NuxtLink :to="`/daily/${item.slug}`" class="font-semibold hover:underline">
+                {{ item.title }}
+              </NuxtLink>
+              <UBadge :label="item.source" variant="subtle" color="primary" />
+            </div>
+          </template>
+          <p class="text-sm text-neutral-600 dark:text-neutral-300">{{ item.summary }}</p>
+          <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-neutral-500">
+            <span>{{ formatDate(item.published_at) }}</span>
+            <UBadge v-for="tag in item.tags || []" :key="tag" :label="tag" color="primary" variant="soft" />
+            <UButton to="/daily" variant="ghost" size="2xs" icon="i-lucide-arrow-up-right">更多</UButton>
+          </div>
+        </UCard>
+      </div>
+    </UPageSection>
+
+    <UPageSection title="热门工具" description="精选高频使用的 AI 工具">
       <div class="grid gap-6 md:grid-cols-3">
-        <UCard>
-          <template #header>响应式布局</template>
-          <p>使用 Nuxt UI 组件与 Tailwind 设计系统实现响应式布局。</p>
-        </UCard>
-        <UCard>
-          <template #header>内容管理</template>
-          <p>集成 Nuxt Content，支持 Markdown/MDC 渲染与导航。</p>
-        </UCard>
-        <UCard>
-          <template #header>性能优化</template>
-          <p>默认 SSR、预加载关键资源与稳定的页面过渡，提升 LCP/FID/CLS。</p>
+        <UCard v-for="tool in topTools" :key="tool.id">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-sm font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-200">
+                {{ tool.name.slice(0, 1) }}
+              </div>
+              <div class="flex-1">
+                <NuxtLink :to="`/tools/${tool.slug}`" class="font-semibold hover:underline">
+                  {{ tool.name }}
+                </NuxtLink>
+                <div class="text-xs text-neutral-500">{{ tool.categories.join(" / ") }}</div>
+              </div>
+            </div>
+          </template>
+          <p class="text-sm text-neutral-600 dark:text-neutral-300 line-clamp-3">{{ tool.description }}</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <UBadge v-for="tag in tool.tags || []" :key="tag" :label="tag" variant="subtle" color="primary" />
+          </div>
+          <div class="mt-4 flex items-center justify-between">
+            <UBadge :label="pricingText(tool.pricing)" variant="soft" color="primary" />
+            <UButton :to="tool.url" target="_blank" variant="ghost" size="xs" icon="i-lucide-external-link">访问</UButton>
+          </div>
         </UCard>
       </div>
     </UPageSection>
@@ -57,6 +101,7 @@
 </template>
 
 <script lang="ts" setup>
+import { mockNews, mockTools, type NewsItem, type ToolItem } from '~/utils/mockData'
 
 type PostCard = {
   path: string
@@ -75,6 +120,18 @@ const { data: latestRaw } = await useAsyncData<PostCard[]>(
 )
 const latest = computed<PostCard[]>(() => latestRaw.value ?? [])
 
+const keyword = ref('')
+const searchLink = computed(() => keyword.value.trim() ? `/tools?q=${encodeURIComponent(keyword.value.trim())}` : '/tools')
+
+const topNews = computed<NewsItem[]>(() => {
+  return [...mockNews]
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+    .slice(0, 4)
+})
+
+const topTools = computed<ToolItem[]>(() => mockTools.slice(0, 6))
+
+
 /**
  * 格式化日期
  */
@@ -88,12 +145,19 @@ function formatDate(input?: string | Date): string {
   })
 }
 
+function pricingText(p?: ToolItem['pricing']) {
+  if (p === 'free') return '免费'
+  if (p === 'freemium') return '免费增值'
+  if (p === 'paid') return '付费'
+  return '未标注'
+}
+
 useSeoMeta({
   title: "AI Compass 首页",
   description:
-    "Nuxt 4 + Nuxt UI + Nuxt Content 的生产级模板，支持 SSR 与优秀的性能指标",
+    "每日 AI 快讯与工具导航，基于 Nuxt 4 + Nuxt UI + Nuxt Content，预留 Supabase 数据源",
   ogTitle: "AI Compass 首页",
-  ogDescription: "Nuxt 4 + Nuxt UI + Nuxt Content 的生产级模板",
+  ogDescription: "每日 AI 快讯与工具导航，基于 Nuxt 4 + Nuxt UI + Nuxt Content",
 })
 </script>
 

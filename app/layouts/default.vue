@@ -30,6 +30,8 @@ const siteTitle: string = 'AI Compass'
 const navItems = [
   { label: '首页', to: '/' },
   { label: '文章', to: '/articles' },
+  { label: '每日快讯', to: '/daily' },
+  { label: '工具库', to: '/tools' },
 ]
 </script>
 
