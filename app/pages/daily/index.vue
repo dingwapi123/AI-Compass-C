@@ -1,13 +1,11 @@
 <template>
   <div class="space-y-0">
     <div
-      class="bg-gradient-to-b from-primary-50/60 via-white to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950 pb-10"
+      class="bg-gradient-to-b from-primary-50/60 via-white to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950 pb-8"
     >
       <UContainer>
-        <div
-          class="flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between"
-        >
-          <div class="space-y-3 max-w-2xl">
+        <div class="flex flex-col gap-4 py-10">
+          <div class="space-y-3 max-w-3xl">
             <div
               class="inline-flex items-center gap-2 rounded-full bg-primary-100/70 px-4 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-100"
             >
@@ -18,16 +16,16 @@
               汇总过去几日的重要更新，按来源、标签与关键词快速检索。
             </p>
           </div>
-          <div class="w-full max-w-lg">
+          <div class="w-full max-w-3xl">
             <div
-              class="rounded-2xl border border-neutral-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/80"
+              class="rounded-2xl border border-neutral-200/70 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/90"
             >
               <div
                 class="text-sm font-semibold text-neutral-700 dark:text-neutral-200 mb-3"
               >
                 筛选
               </div>
-              <div class="flex flex-col gap-3">
+              <div class="grid gap-3 md:grid-cols-2">
                 <USelect
                   v-model="selectedSource"
                   :options="sourceOptions"
@@ -38,17 +36,9 @@
                   :options="tagOptions"
                   placeholder="标签"
                 />
-                <div
-                  class="flex items-center gap-2 rounded-xl border border-neutral-200/60 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900"
-                >
-                  <UIcon name="i-lucide-search" class="text-neutral-500" />
-                  <input
-                    v-model="keyword"
-                    type="text"
-                    placeholder="搜索标题或摘要"
-                    class="w-full bg-transparent text-sm outline-none placeholder:text-neutral-500"
-                  />
-                </div>
+              </div>
+              <div class="text-xs text-neutral-500">
+                按来源与标签筛选每日更新
               </div>
             </div>
           </div>
@@ -128,7 +118,6 @@
 <script setup lang="ts">
 import { mockNews, type NewsItem } from "~/utils/mockData"
 
-const keyword = ref("")
 const selectedSource = ref<string | undefined>(undefined)
 const selectedTags = ref<string[]>([])
 
@@ -148,11 +137,7 @@ const tagOptions = computed(() => {
 
 const filtered = computed<NewsItem[]>(() => {
   return mockNews.filter((item) => {
-    const kw = keyword.value.trim().toLowerCase()
-    const kwOk = kw
-      ? item.title.toLowerCase().includes(kw) ||
-        item.summary.toLowerCase().includes(kw)
-      : true
+    const kwOk = true
     const sourceOk = selectedSource.value
       ? item.source === selectedSource.value
       : true
