@@ -1,2 +1,12 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+/* 主题切换过渡与无障碍偏好 */
+@media (prefers-reduced-motion: no-preference) {
+  html, body {
+    transition: background-color .15s ease, color .15s ease;
+  }
+}
+
+/* 声明支持的颜色方案，配合 SSR 防止闪烁 */
+html { color-scheme: light dark; }

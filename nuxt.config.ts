@@ -7,7 +7,16 @@ export default defineNuxtConfig({
   ui: {
     fonts: false,
   },
+  colorMode: {
+    preference: "system",
+    fallback: "light",
+    classSuffix: "",
+    storageKey: "ai-compass-color-mode",
+  },
   app: {
     pageTransition: { name: "fade", mode: "out-in" },
+    head: {
+      meta: [{ name: "color-scheme", content: "light dark" }],
+    },
   },
 })
