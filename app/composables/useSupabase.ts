@@ -26,7 +26,24 @@ export function useSupabaseRest() {
     })
   }
 
-  return { get }
+  /**
+   * 发送 GET 请求并返回原始响应（含 headers）
+   */
+  async function getRaw<T = any>(path: string, params?: Record<string, any>, options?: FetchOptions<'json'>): Promise<{ data: T, headers: Headers }> {
+    const url = `${base}/rest/v1/${path}`
+    const res = await $fetch.raw<T>(url, {
+      method: 'GET',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+      },
+      query: params,
+      ...options,
+    })
+    return { data: res._data as T, headers: res.headers }
+  }
+
+  return { get, getRaw }
 }
 
 /**
