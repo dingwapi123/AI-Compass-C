@@ -23,7 +23,10 @@
     </UPageHeader>
 
     <UPageSection>
-      <div v-if="filtered.length" class="grid gap-6 md:grid-cols-3">
+      <div v-if="listStatus === 'pending'">
+        <USkeleton class="h-24 mb-4" v-for="i in 3" :key="i" />
+      </div>
+      <div v-else-if="filtered.length" class="grid gap-6 md:grid-cols-3">
         <UCard v-for="post in filtered" :key="post.path">
           <template #header>
             <NuxtLink :to="post.path" class="font-semibold hover:underline">{{
@@ -54,6 +57,16 @@
             <UButton to="/" color="primary" variant="solid">返回首页</UButton>
           </template>
         </UEmpty>
+        <div v-if="listError" class="mt-4 text-sm text-red-600">加载文章列表失败：{{ String(listError) }}</div>
+      </div>
+    </UPageSection>
+    <UPageSection>
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-neutral-600">合计 {{ total }} 条 · 每页 {{ limit }} 条</div>
+        <div class="flex items-center gap-2">
+          <UButton :disabled="page <= 1" @click="page = Math.max(1, page - 1)">上一页</UButton>
+          <UButton :disabled="page >= Math.ceil(total / limit) || total === 0" @click="page = page + 1">下一页</UButton>
+        </div>
       </div>
     </UPageSection>
   </UContainer>
@@ -70,14 +83,13 @@ type ArticleCard = {
 }
 
 /**
- * 加载文章列表（从 Supabase 获取，组装分类与标签）
+ * 加载文章列表（从 Supabase 获取，组装分类与标签，并解析总量）
  */
-async function fetchArticlesPage(limit = 20, page = 1): Promise<ArticleCard[]> {
-  const { get } = useSupabaseRest()
+async function fetchArticlesPage(limit = 20, page = 1): Promise<{ items: ArticleCard[]; total: number }> {
+  const { get, getRaw } = useSupabaseRest()
   const { from, to } = buildPagination(limit, page)
 
-  // 读取已发布文章的核心字段
-  const rows = await get<{
+  const { data: rows, headers } = await getRaw<{
     id: string
     slug: string
     title: string
@@ -89,13 +101,13 @@ async function fetchArticlesPage(limit = 20, page = 1): Promise<ArticleCard[]> {
     { status: 'eq.published', select: 'id,slug,title,author_id,category_id,created_at', order: 'created_at.desc' },
     { headers: { Range: `${from}-${to}` } }
   )
+  const contentRange = headers.get('content-range') || '0-0/0'
+  const total = Number(contentRange.split('/')[1] || 0)
 
-  // 收集需要的 id 集合
   const articleIds = rows.map(r => r.id)
   const categoryIds = Array.from(new Set(rows.map(r => r.category_id).filter(Boolean))) as string[]
   const authorIds = Array.from(new Set(rows.map(r => r.author_id).filter(Boolean))) as string[]
 
-  // 批量读取分类
   const categories = categoryIds.length
     ? await get<{ id: string; name: string; slug: string }[]>(
         'categories',
@@ -104,7 +116,6 @@ async function fetchArticlesPage(limit = 20, page = 1): Promise<ArticleCard[]> {
     : []
   const categoryMap = new Map(categories.map(c => [c.id, c]))
 
-  // 批量读取作者
   const authors = authorIds.length
     ? await get<{ id: string; name: string }[]>(
         'authors',
@@ -113,7 +124,6 @@ async function fetchArticlesPage(limit = 20, page = 1): Promise<ArticleCard[]> {
     : []
   const authorMap = new Map(authors.map(a => [a.id, a]))
 
-  // 读取文章-标签映射，再读取标签实体
   const atMap = articleIds.length
     ? await get<{ article_id: string; tag_id: string }[]>(
         'article_tags',
@@ -129,8 +139,7 @@ async function fetchArticlesPage(limit = 20, page = 1): Promise<ArticleCard[]> {
     : []
   const tagMap = new Map(tags.map(t => [t.id, t.name]))
 
-  // 组装为页面所需结构
-  const list: ArticleCard[] = rows.map(r => {
+  const items: ArticleCard[] = rows.map(r => {
     const tagsForArticle = atMap
       .filter(x => x.article_id === r.id)
       .map(x => tagMap.get(x.tag_id))
@@ -147,14 +156,19 @@ async function fetchArticlesPage(limit = 20, page = 1): Promise<ArticleCard[]> {
     }
   })
 
-  return list
+  return { items, total }
 }
 
-const { data: articlesRaw } = await useAsyncData<ArticleCard[]>(
+const limit = ref(20)
+const page = ref(1)
+const total = ref(0)
+const { data: pageData, status: listStatus, error: listError } = await useAsyncData<{ items: ArticleCard[]; total: number}>(
   'articles:list',
-  () => fetchArticlesPage()
+  () => fetchArticlesPage(limit.value, page.value),
+  { watch: [limit, page] }
 )
-const articles = computed<ArticleCard[]>(() => articlesRaw.value ?? [])
+const articles = computed<ArticleCard[]>(() => pageData.value?.items ?? [])
+watch(pageData, (val) => { total.value = val?.total ?? 0 })
 
 /**
  * 分类与标签筛选状态
@@ -163,23 +177,26 @@ const selectedCategory = ref<string | undefined>(undefined)
 const selectedTags = ref<string[]>([])
 
 /**
- * 选项集合（从文章中提取去重）
+ * 选项集合（从 Supabase 读取）
  */
-const categoryOptions = computed<string[]>(() => {
-  const set = new Set<string>()
-  for (const a of articles.value) {
-    if (a.category) set.add(String(a.category))
+const { get } = useSupabaseRest()
+const { data: categoryOptionsRaw } = await useAsyncData<string[]>(
+  'articles:categories:options',
+  async () => {
+    const rows = await get<{ id: string; name: string }[]>('categories', { select: 'id,name', order: 'name.asc' })
+    return rows.map(r => r.name)
   }
-  return Array.from(set)
-})
+)
+const categoryOptions = computed<string[]>(() => categoryOptionsRaw.value ?? [])
 
-const tagOptions = computed<string[]>(() => {
-  const set = new Set<string>()
-  for (const a of articles.value) {
-    for (const t of a.tags || []) set.add(t)
+const { data: tagOptionsRaw } = await useAsyncData<string[]>(
+  'articles:tags:options',
+  async () => {
+    const rows = await get<{ id: string; name: string }[]>('tags', { select: 'id,name', order: 'name.asc' })
+    return rows.map(r => r.name)
   }
-  return Array.from(set)
-})
+)
+const tagOptions = computed<string[]>(() => tagOptionsRaw.value ?? [])
 
 /**
  * 过滤后的文章列表
