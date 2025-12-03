@@ -4,6 +4,32 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   devtools: { enabled: true },
   modules: ["@nuxt/ui", "@nuxt/content", "@nuxt/image", "@pinia/nuxt", "@nuxt/eslint"],
+  
+  // 自动导入配置
+  imports: {
+    dirs: [
+      'composables/**', // 递归扫描 composables 目录
+    ]
+  },
+
+  // 组件配置
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false, // 禁用目录前缀，直接使用组件名
+    },
+  ],
+
+  // 混合渲染配置
+  routeRules: {
+    '/': { swr: 3600 }, // 首页 SWR 1小时
+    '/categories/**': { swr: 3600 }, // 分类页 SWR 1小时
+    '/tools/**': { isr: 3600 }, // 工具详情页 ISR 1小时
+    '/articles/**': { prerender: true }, // 文章页预渲染
+    '/admin/**': { ssr: false }, // 后台管理 SPA
+    '/search': { ssr: false }, // 搜索页 SPA
+  },
+
   ui: {
     fonts: false,
   },

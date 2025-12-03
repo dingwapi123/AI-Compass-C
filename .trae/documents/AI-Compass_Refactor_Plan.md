@@ -1,70 +1,87 @@
-# AI Compass 项目完善与重构计划
+# AI Compass 项目完善与重构计划 (V2)
 
-根据 Nuxt Content 文档规范及 MCP (模块化组件模式) 要求，制定以下项目完善计划。
+根据 Nuxt Content 文档规范、MCP (模块化组件模式) 及 **迭代式开发流程规范**，制定以下实施计划。
 
-## 1. 项目架构完善 (Architecture)
+## 0. 开发流程规范 (Development Process)
 
-### 1.1 目录结构重构 (MCP 模式)
-按照功能模块（Domain-Driven）而非单纯的技术类型重组目录，提升可维护性。
+### 0.1 开发阶段要求
+- **模块化开发**: 将项目拆分为高内聚、低耦合的大模块，每个模块包含完整的前后端交互与 UI。
+- **里程碑确认**: 每个模块开发完成后暂停，提交测试报告，等待确认后进入下一阶段。
+- **独立测试**: 模块间保持松耦合，确保可独立进行单元测试与功能验证。
 
-```
-app/
-├── components/
-│   ├── common/         # 通用基础组件 (Button, Card, Input...)
-│   ├── layout/         # 布局相关 (Header, Footer, Sidebar...)
-│   ├── tools/          # 工具业务组件 (ToolCard, ToolList, ToolDetail...)
-│   ├── content/        # 内容展示组件 (MarkdownView, ArticleCard...)
-│   └── admin/          # 后台管理组件
-├── composables/
-│   ├── core/           # 核心逻辑 (useApi, useTheme...)
-│   ├── business/       # 业务逻辑 (useTools, useSearch...)
-│   └── services/       # 第三方服务 (useSupabase...)
-├── pages/              # 路由页面 (保持 Nuxt 约定)
-└── types/              # 全局类型定义
-```
+### 0.2 质量保证措施 (QA)
+- **单元测试**: 核心逻辑覆盖率 ≥ 80% (使用 Vitest)。
+- **接口文档**: 提供 API 定义与使用说明 (Markdown/TSDoc)。
+- **交付清单**: 每次提交包含功能清单、已知问题、部署/环境依赖说明。
 
-### 1.2 统一 API 调用层
-- 封装 `useApi` Composable，统一处理 Supabase 和 Nuxt Content 的数据请求。
-- 规范化错误处理与响应拦截。
-
-## 2. Nuxt.js 集成深化
-
-### 2.1 混合渲染模式 (Hybrid Rendering)
-配置 `nuxt.config.ts` 中的 `routeRules`：
-- 首页 (`/`)、分类页 (`/categories/**`)：**SWR (Stale-While-Revalidate)**，TTL 1小时。
-- 工具详情页 (`/tools/**`)：**ISG (Incremental Static Generation)** 或 SWR。
-- 静态文章 (`/articles/**`)：**Prerender (SSG)**。
-- 后台管理 (`/admin/**`)：**SPA (Client-side only)**。
-- 搜索页 (`/search`)：**SPA**。
-
-### 2.2 路由与中间件
-- 完善 `auth` 中间件：保护 `/admin` 路由。
-- 添加 `seo` 中间件或全局配置：动态生成 Meta Tags。
-
-## 3. Nuxt UI 组件整合
-
-### 3.1 组件模块化
-- 确保所有 UI 组件基于 Nuxt UI 封装，统一风格。
-- 实现暗色模式 (Dark Mode) 的完美适配。
-
-### 3.2 响应式适配
-- 使用 Tailwind CSS 的响应式前缀 (`md:`, `lg:`) 确保 Mobile First。
-- 优化移动端导航栏与交互体验。
-
-## 4. 项目质量保证
-
-### 4.1 文档体系
-- **README.md**: 更新项目概览与启动指南。
-- **docs/**:
-  - `ARCHITECTURE.md`: 更新后的架构说明。
-  - `CONTRIBUTING.md`: 开发贡献指南。
-  - `DEPLOY.md`: 更新混合渲染部署说明。
-
-### 4.2 代码规范
-- 配置 ESLint + Prettier (已完成基础配置，需检查规则)。
-- 确保所有新增代码包含 TSDoc 注释。
+### 0.3 版本控制 (Git Flow)
+- **分支策略**:
+  - `main`: 生产分支 (Stable)。
+  - `develop`: 开发主分支。
+  - `feature/module-name`: 模块开发分支。
+- **合并标准**: 通过自动化测试与代码审查后合并至 `develop`。
 
 ---
 
-**确认事项：**
-请确认以上重构方向是否符合您的预期？确认后我将按顺序执行开发。
+## 1. 模块划分与实施计划
+
+### 📦 模块一：架构重构与基础设施 (Architecture & Infra)
+**目标**: 建立符合 MCP 的目录结构，统一 API 层，配置混合渲染与测试环境。
+
+- **任务清单**:
+  - [ ] **目录重构**: 按 MCP 模式重组 `app/` (Components, Composables)。
+  - [ ] **API 层封装**: 实现 `useApi`，统一 Supabase/Content 请求与错误处理。
+  - [ ] **混合渲染配置**: 在 `nuxt.config.ts` 中实现 SWR/ISG/SPA 混合策略。
+  - [ ] **测试环境搭建**: 集成 Vitest，编写 `useApi` 与 Store 的单元测试。
+  - [ ] **Git 初始化**: 建立仓库，创建 `develop` 分支。
+
+- **交付物**:
+  - 重构后的代码库。
+  - 单元测试报告 (覆盖率截图)。
+  - `docs/API_LAYER.md` (API 层使用文档)。
+
+### 📦 模块二：前台核心业务 (Public Domain)
+**目标**: 完善面向用户的核心功能（展示、搜索、内容），实现响应式 UI。
+
+- **任务清单**:
+  - [ ] **组件模块化**: 拆分 `ToolCard`, `SearchBar`, `MarkdownView` 等组件。
+  - [ ] **搜索增强**: 优化 `search.vue`，集成服务端过滤与本地历史。
+  - [ ] **内容集成**: 规范化 Nuxt Content 文章展示与 Markdown 渲染。
+  - [ ] **UI 响应式**: 确保 PC/Pad/Mobile 三端适配。
+
+- **交付物**:
+  - 完整的首页、列表页、详情页、搜索页。
+  - 关键组件的快照测试/单元测试。
+
+### 📦 模块三：用户与交互系统 (User System)
+**目标**: 实现用户收藏、评分等交互功能（基于本地存储或 Supabase）。
+
+- **任务清单**:
+  - [ ] **用户状态管理**: 完善 `userStore` (Pinia)。
+  - [ ] **收藏功能**: 实现收藏/取消收藏逻辑与持久化。
+  - [ ] **评分组件**: 交互式评分 UI 组件。
+
+- **交付物**:
+  - 交互功能完整的用户系统。
+  - Store 逻辑单元测试。
+
+### 📦 模块四：后台管理系统 (Admin System)
+**目标**: 实现数据的增删改查 (CRUD) 与管理界面。
+
+- **任务清单**:
+  - [ ] **管理布局**: 独立的 Admin Layout 与侧边栏。
+  - [ ] **工具管理**: 工具列表、新增/编辑表单 (Schema Validation)。
+  - [ ] **权限控制**: 基础的路由守卫 (Route Guard)。
+
+- **交付物**:
+  - 可运行的后台管理系统。
+  - CRUD 操作的测试用例。
+
+---
+
+## 2. 立即执行：模块一启动准备
+
+如果您确认以上计划无误，我将开始 **模块一：架构重构与基础设施** 的开发。
+1. 初始化 Git 仓库并切出 `feature/architecture-refactor` 分支。
+2. 执行目录重构与环境配置。
+3. 编写基础测试。
