@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia"
 
 type State = {
   keyword: string
@@ -8,8 +8,8 @@ type State = {
 /**
  * 搜索状态：关键词与历史记录
  */
-export const useSearchStore = defineStore('search', {
-  state: (): State => ({ keyword: '', history: [] }),
+export const useSearchStore = defineStore("search", {
+  state: (): State => ({ keyword: "", history: [] }),
   actions: {
     /**
      * 添加搜索词到历史记录
@@ -17,14 +17,14 @@ export const useSearchStore = defineStore('search', {
     addHistory(term: string) {
       const t = term.trim()
       if (!t) return
-      this.history = [t, ...this.history.filter(x => x !== t)].slice(0, 20)
+      this.history = [t, ...this.history.filter((x) => x !== t)].slice(0, 20)
       this.save()
     },
     /**
      * 删除历史项
      */
     removeHistory(term: string) {
-      this.history = this.history.filter(x => x !== term)
+      this.history = this.history.filter((x) => x !== term)
       this.save()
     },
     /**
@@ -38,9 +38,9 @@ export const useSearchStore = defineStore('search', {
      * 从 localStorage 加载
      */
     load() {
-      if (process.client) {
+      if (import.meta.client) {
         try {
-          const raw = localStorage.getItem('ai-compass-search-history')
+          const raw = localStorage.getItem("ai-compass-search-history")
           this.history = raw ? JSON.parse(raw) : []
         } catch {}
       }
@@ -49,9 +49,12 @@ export const useSearchStore = defineStore('search', {
      * 保存到 localStorage
      */
     save() {
-      if (process.client) {
+      if (import.meta.client) {
         try {
-          localStorage.setItem('ai-compass-search-history', JSON.stringify(this.history))
+          localStorage.setItem(
+            "ai-compass-search-history",
+            JSON.stringify(this.history)
+          )
         } catch {}
       }
     },
