@@ -1,75 +1,46 @@
-# Nuxt Minimal Starter
+# AI Compass - AI 导航站
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 项目背景
 
-## Setup
+随着 AI 技术的爆发式增长，各种 AI 工具层出不穷。AI Compass 旨在为用户提供一个全面、高质量的 AI 工具导航平台，帮助用户快速发现、筛选和使用最适合自己的 AI 工具。
 
-Make sure to install dependencies:
+## 核心功能
+
+- **AI 工具分类展示**：按文本、图像、音频、视频、编程等维度对工具进行分类。
+- **搜索与筛选**：支持关键词搜索及多维度筛选（免费/付费、评分等）。
+- **用户收藏**：登录用户可以收藏自己喜欢的工具。
+- **评分系统**：用户可以对工具进行评分和评价。
+- **响应式设计**：完美适配 PC、平板和手机端。
+- **后台管理**：管理员可对工具进行增删改查及处理用户反馈。
+
+## 目标用户
+
+- **AI 开发者/研究人员**：寻找最新的 AI 模型和开发工具。
+- **内容创作者**：寻找辅助写作、绘图、视频生成的 AI 工具。
+- **普通用户**：探索有趣的 AI 应用，提升工作效率。
+
+## 文档导航
+
+- [技术架构文档](./docs/ARCHITECTURE.md)
+- [API 文档](./docs/API.md)
+- [部署指南](./docs/DEPLOY.md)
+
+## 快速开始
+
+### 依赖安装
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+### 开发环境
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+### 生产构建
 
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
