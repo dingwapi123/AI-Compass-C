@@ -11,6 +11,24 @@
         <p class="text-gray-500 dark:text-gray-400 text-lg">
           您的最佳AI工具导航，为您精心挑选和分类。
         </p>
+
+        <div class="mt-8 max-w-md mx-auto">
+          <UInput
+            placeholder="搜索AI工具..."
+            size="lg"
+            icon="i-heroicons-magnifying-glass"
+            :ui="{ trailing: 'pointer-events-auto' }"
+          >
+            <template #trailing>
+              <UButton
+                color="neutral"
+                variant="ghost"
+                icon="i-heroicons-arrow-right"
+                @click="navigateTo('/search')"
+              />
+            </template>
+          </UInput>
+        </div>
       </UContainer>
     </section>
 

@@ -20,24 +20,24 @@
       <div class="flex gap-1">
         <UButton
           icon="i-heroicons-arrows-up-down"
-          color="gray"
+          color="primary"
           variant="ghost"
           size="sm"
-          :ui="{ rounded: 'rounded-md' }"
+          class="rounded-md"
         />
         <UButton
           icon="i-heroicons-funnel"
-          color="gray"
+          color="neutral"
           variant="ghost"
           size="sm"
-          :ui="{ rounded: 'rounded-md' }"
+          class="rounded-md"
         />
         <UButton
           icon="i-heroicons-squares-2x2"
-          color="gray"
+          color="neutral"
           variant="ghost"
           size="sm"
-          :ui="{ rounded: 'rounded-md' }"
+          class="rounded-md"
         />
       </div>
     </div>

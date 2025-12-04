@@ -19,31 +19,32 @@
     </div>
 
     <!-- Toolbar -->
-    <div v-if="category" class="flex justify-between items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-3">
-      <p class="text-sm text-gray-600 dark:text-gray-400">
-        找到 {{ categoryTools.length }} 个工具
-      </p>
+    <div
+      v-if="category"
+      class="flex justify-between items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-3"
+    >
+      <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ categoryTools.length }} 个工具</p>
       <div class="flex gap-1">
         <UButton
           icon="i-heroicons-arrows-up-down"
-          color="gray"
+          color="neutral"
           variant="ghost"
           size="sm"
-          :ui="{ rounded: 'rounded-md' }"
+          class="rounded-md"
         />
         <UButton
           icon="i-heroicons-funnel"
-          color="gray"
+          color="neutral"
           variant="ghost"
           size="sm"
-          :ui="{ rounded: 'rounded-md' }"
+          class="rounded-md"
         />
         <UButton
           icon="i-heroicons-squares-2x2"
-          color="gray"
+          color="neutral"
           variant="ghost"
           size="sm"
-          :ui="{ rounded: 'rounded-md' }"
+          class="rounded-md"
         />
       </div>
     </div>
@@ -53,16 +54,17 @@
       <USkeleton v-for="i in 8" :key="i" class="aspect-square rounded-xl w-full" />
     </div>
 
-    <div v-else-if="categoryTools.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <ToolMinimalCard 
-        v-for="tool in categoryTools" 
-        :key="tool.id" 
-        :tool="tool" 
-      />
+    <div
+      v-else-if="categoryTools.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    >
+      <ToolMinimalCard v-for="tool in categoryTools" :key="tool.id" :tool="tool" />
     </div>
 
     <div v-else-if="category" class="text-center py-20">
-      <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+      <div
+        class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400"
+      >
         <UIcon name="i-heroicons-inbox" class="w-8 h-8" />
       </div>
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">暂无工具</h3>
@@ -85,29 +87,31 @@ await toolsStore.fetchTools()
 const categorySlug = route.params.slug as string
 
 const category = computed(() => {
-  return categories.value.find(c => c.slug === categorySlug)
+  return categories.value.find((c) => c.slug === categorySlug)
 })
 
 const categoryTools = computed(() => {
   if (!category.value) return []
-  return tools.value.filter(t => t.category_id === category.value?.id)
+  return tools.value.filter((t) => t.category_id === category.value?.id)
 })
 
 useHead({
-  title: computed(() => category.value ? `${category.value.name} - AI Compass` : '分类不存在 - AI Compass'),
+  title: computed(() =>
+    category.value ? `${category.value.name} - AI Compass` : '分类不存在 - AI Compass'
+  ),
   meta: [
-    { 
-      name: 'description', 
-      content: computed(() => category.value?.description || '探索 AI Compass 的工具分类。') 
-    }
-  ]
+    {
+      name: 'description',
+      content: computed(() => category.value?.description || '探索 AI Compass 的工具分类。'),
+    },
+  ],
 })
 
 // Handle 404
 if (!category.value && !loading.value) {
   throw createError({
     statusCode: 404,
-    statusMessage: 'Category Not Found'
+    statusMessage: 'Category Not Found',
   })
 }
 </script>
