@@ -1,81 +1,126 @@
 <template>
-  <UContainer>
-    <UPageHero
-      title="AI Compass"
-      description="基于 Nuxt 4 + Nuxt UI 的生产级站点模板，优化 SSR 与 SEO，集成 Nuxt Content 作为内容系统。"
-      :links="[
-        { label: '开始阅读', to: '/articles', icon: 'i-lucide-book-open' },
-        {
-          label: '了解更多',
-          to: 'https://nuxt.com',
-          icon: 'i-lucide-external-link',
-        },
-      ]"
-    />
+  <div>
+    <!-- Hero Section -->
+    <section class="relative py-24 overflow-hidden bg-white dark:bg-gray-950">
+      <div
+        class="absolute inset-0 bg-[url('https://design.ai-compass.com/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"
+      />
 
-    <UPageSection title="热门分类" description="探索不同领域的 AI 工具">
-      <div class="grid gap-6 md:grid-cols-3 lg:grid-cols-5">
-        <NuxtLink
-          v-for="category in categories"
-          :key="category.id"
-          :to="`/categories/${category.slug}`"
-          class="group block"
+      <UContainer class="relative z-10 text-center">
+        <UBadge color="primary" variant="subtle" size="md" class="mb-6 rounded-full">
+          Explore the Future of AI
+        </UBadge>
+
+        <h1
+          class="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 dark:text-white mb-6"
         >
-          <UCard class="h-full transition-all group-hover:ring-primary-500">
-            <div class="flex flex-col items-center text-center">
-              <UIcon :name="category.icon || 'i-heroicons-cube'" class="mb-3 h-8 w-8 text-primary-500" />
-              <h3 class="font-semibold text-gray-900 dark:text-white">{{ category.name }}</h3>
-              <p class="mt-1 text-xs text-gray-500">{{ category.description }}</p>
-            </div>
-          </UCard>
-        </NuxtLink>
-      </div>
-    </UPageSection>
+          Discover the Best <br />
+          <span class="text-primary-500">AI Tools</span> for You
+        </h1>
 
-    <UPageSection title="精选工具" description="最受欢迎的 AI 效率神器">
-      <div class="grid gap-6 md:grid-cols-3">
-        <UCard v-for="tool in featuredTools" :key="tool.id" class="flex flex-col">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <NuxtLink :to="`/tools/${tool.slug}`" class="font-semibold hover:text-primary-500 hover:underline">
-                {{ tool.name }}
-              </NuxtLink>
-              <UBadge v-if="tool.pricing_model" :color="tool.pricing_model === 'free' ? 'success' : 'warning'" variant="subtle" size="xs">
-                {{ tool.pricing_model === 'free' ? '免费' : (tool.pricing_model === 'freemium' ? '免费试用' : '付费') }}
-              </UBadge>
-            </div>
-          </template>
-          
-          <p class="line-clamp-2 text-sm text-gray-600 dark:text-gray-300">
-            {{ tool.description }}
-          </p>
+        <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10">
+          Navigating the AI landscape has never been easier. Find, compare, and use the top AI tools
+          to supercharge your workflow.
+        </p>
 
-          <div class="mt-4 flex items-center justify-between">
-            <div class="flex items-center gap-1 text-yellow-500">
-              <UIcon name="i-heroicons-star-solid" />
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ tool.rating }}</span>
-            </div>
-            <div class="flex gap-2">
-               <UBadge
-                v-for="tag in (tool.tags || []).slice(0, 2)"
-                :key="tag"
-                :label="tag"
-                color="neutral"
-                variant="soft"
-                size="xs"
+        <div class="max-w-xl mx-auto mb-12">
+          <UInput
+            icon="i-heroicons-magnifying-glass"
+            placeholder="Search for tools (e.g. 'ChatGPT', 'Image Generator')..."
+            size="xl"
+            :ui="{ icon: { trailing: { pointer: '' } } }"
+            class="w-full"
+            @keyup.enter="navigateTo('/search')"
+          >
+            <template #trailing>
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-arrow-right"
+                @click="navigateTo('/search')"
               />
-            </div>
-          </div>
+            </template>
+          </UInput>
+        </div>
 
-          <template #footer>
-            <UButton :to="`/tools/${tool.slug}`" block variant="ghost" color="neutral">
-              查看详情
-            </UButton>
-          </template>
-        </UCard>
-      </div>
-    </UPageSection>
-  </UContainer>
+        <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
+          <span>Popular:</span>
+          <NuxtLink
+            to="/search?q=writing"
+            class="hover:text-primary-500 underline decoration-dotted"
+            >Writing</NuxtLink
+          >
+          <NuxtLink to="/search?q=image" class="hover:text-primary-500 underline decoration-dotted"
+            >Image Generation</NuxtLink
+          >
+          <NuxtLink to="/search?q=coding" class="hover:text-primary-500 underline decoration-dotted"
+            >Coding</NuxtLink
+          >
+        </div>
+      </UContainer>
+    </section>
+
+    <!-- Categories Section -->
+    <section
+      class="py-16 bg-gray-50 dark:bg-gray-900/50 border-y border-gray-200 dark:border-gray-800"
+    >
+      <UContainer>
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Browse Categories</h2>
+          <UButton
+            to="/categories"
+            variant="ghost"
+            color="gray"
+            trailing-icon="i-heroicons-arrow-right"
+          >
+            View All
+          </UButton>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <NuxtLink
+            v-for="category in categories"
+            :key="category.id"
+            :to="`/categories/${category.slug}`"
+            class="group"
+          >
+            <div
+              class="h-full p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-colors text-center"
+            >
+              <div
+                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-500 mb-3 group-hover:scale-110 transition-transform"
+              >
+                <UIcon :name="category.icon || 'i-heroicons-cube'" class="w-6 h-6" />
+              </div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{{ category.name }}</h3>
+              <p class="text-xs text-gray-500">120+ Tools</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </UContainer>
+    </section>
+
+    <!-- Featured Tools Section -->
+    <section class="py-20">
+      <UContainer>
+        <div class="flex items-center justify-between mb-10">
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Featured Tools</h2>
+            <p class="text-gray-500 dark:text-gray-400">
+              Hand-picked AI tools to boost your productivity.
+            </p>
+          </div>
+          <UButton to="/search" color="white" trailing-icon="i-heroicons-arrow-right">
+            Explore All
+          </UButton>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <ToolCard v-for="tool in featuredTools" :key="tool.id" :tool="tool" />
+        </div>
+      </UContainer>
+    </section>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -85,15 +130,15 @@ const toolsStore = useToolsStore()
 
 // Fetch data on server side
 await useAsyncData('home-data', async () => {
-  await Promise.all([
-    toolsStore.fetchCategories(),
-    toolsStore.fetchTools()
-  ])
+  await Promise.all([toolsStore.fetchCategories(), toolsStore.fetchTools()])
   return true
 })
 
-const categories = computed(() => toolsStore.categories)
+const categories = computed(() => toolsStore.categories.slice(0, 5))
 const featuredTools = computed(() => toolsStore.tools.slice(0, 6))
-</script>
 
-<style scoped></style>
+useSeoMeta({
+  title: 'AI Compass - Discover the Best AI Tools',
+  description: 'Your ultimate guide to the AI landscape. Find, compare and review top AI tools.',
+})
+</script>
