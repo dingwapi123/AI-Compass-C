@@ -9,12 +9,12 @@
       </NuxtLink>
     </template>
 
-    <!-- <UNavigationMenu :items="navItems" /> -->
+    <UNavigationMenu :items="navItems" />
 
     <template #right>
       <div class="flex items-center gap-2">
         <UButton to="/search" icon="i-heroicons-magnifying-glass" variant="ghost" color="neutral" />
-        <ColorModeButton />
+        <UColorModeButton />
       </div>
     </template>
 
