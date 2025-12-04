@@ -5,6 +5,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxt/ui", "@nuxt/content", "@nuxt/image", "@pinia/nuxt", "@nuxt/eslint"],
   
+    eslint: {
+    config: {
+      stylistic: true // <---
+    }
+  },
+
   // 自动导入配置
   imports: {
     dirs: [
