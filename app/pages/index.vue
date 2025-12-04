@@ -31,7 +31,8 @@
             <div class="flex items-center gap-4">
               <UAvatar
                 :src="
-                  tool.logo || `https://ui-avatars.com/api/?name=${tool.name}&background=random`
+                  tool.image_url ||
+                  `https://ui-avatars.com/api/?name=${tool.name}&background=random`
                 "
                 :alt="tool.name"
                 size="md"
@@ -70,15 +71,10 @@
                 <UButton
                   v-for="category in allCategories"
                   :key="category.id"
-                  :color="selectedCategory === category.id ? 'black' : 'gray'"
-                  variant="solid"
+                  :color="selectedCategory === category.id ? 'neutral' : 'neutral'"
+                  :variant="selectedCategory === category.id ? 'solid' : 'soft'"
                   size="sm"
                   class="rounded-full px-4"
-                  :class="
-                    selectedCategory === category.id
-                      ? ''
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  "
                   @click="selectedCategory = category.id"
                 >
                   {{ category.name }}
@@ -91,9 +87,18 @@
               <ToolCard v-for="tool in filteredTools" :key="tool.id" :tool="tool" class="h-full" />
             </div>
 
-            <!-- Load More -->
-            <div class="text-center pt-4">
-              <UButton variant="soft" color="gray" size="lg" block> 加载更多工具 </UButton>
+            <!-- View All Link -->
+            <div class="flex justify-start pt-8">
+              <UButton
+                to="/categories"
+                variant="outline"
+                color="neutral"
+                size="lg"
+                trailing-icon="i-heroicons-arrow-right"
+                class="px-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                浏览全部工具库
+              </UButton>
             </div>
           </div>
 
