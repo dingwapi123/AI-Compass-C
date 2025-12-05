@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+  <div class="min-h-screen bg-white dark:bg-gray-950">
     <!-- Hero Section -->
-    <section class="py-20 bg-gray-50 dark:bg-gray-950 text-center">
+    <section class="py-20 bg-white dark:bg-gray-950 text-center">
       <UContainer>
         <h1
           class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight"
