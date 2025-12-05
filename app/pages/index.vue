@@ -12,13 +12,13 @@
           您的最佳AI工具导航，为您精心挑选和分类。
         </p>
 
-        <div class="mt-8 max-w-2xl mx-auto">
+        <div class="mt-8 mx-auto">
           <UInput
             placeholder="搜索AI工具..."
             size="xl"
             icon="i-heroicons-magnifying-glass"
             :ui="{ trailing: 'pointer-events-auto' }"
-            class="w-full"
+            class="w-full max-w-2xl"
           >
             <template #trailing>
               <UButton
