@@ -5,7 +5,7 @@
         to="/"
         class="flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white"
       >
-        <NuxtImg src="/images/image.png" width="32" height="32" />
+        <NuxtImg src="/images/image.png" width="50" height="50" />
         <span>AI Compass</span>
       </NuxtLink>
     </template>
