@@ -11,6 +11,22 @@ export default defineNuxtConfig({
       'composables/**', // 递归扫描 composables 目录
     ],
   },
+  image: {
+    // 默认图片存放目录为 public
+    dir: 'public',
+
+    // 支持生成的图片格式
+    format: ['webp', 'png', 'jpg'],
+    // 屏幕尺寸断点（用于响应式图片）
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },
+  },
 
   // 组件配置
   components: [

@@ -5,6 +5,11 @@
         to="/"
         class="flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white"
       >
+        <NuxtImg src="/images/image.png" width="32" height="32" />
+        <img src="~/assets/images/image.png" width="32" height="32" />
+
+        <!-- <Img :src="image" width="32" height="32" /> -->
+
         <span>AI Compass</span>
       </NuxtLink>
     </template>
@@ -25,6 +30,7 @@
 </template>
 
 <script lang="ts" setup>
+import image from '~/assets/images/image.png'
 const navItems = ref([
   { label: 'Home', to: '/', icon: 'i-heroicons-home' },
   { label: 'Categories', to: '/categories', icon: 'i-heroicons-squares-2x2' },
