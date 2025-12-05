@@ -37,24 +37,10 @@
                   <UBadge :color="pricingColor" variant="subtle" class="capitalize">
                     {{ tool.pricing_model }}
                   </UBadge>
-                  <div class="flex items-center gap-1 text-yellow-500">
-                    <UIcon name="i-heroicons-star-solid" class="w-4 h-4" />
-                    <span class="font-medium text-gray-900 dark:text-white">{{ tool.rating }}</span>
-                    <span class="text-gray-500">({{ tool.review_count }} 评论)</span>
-                  </div>
                 </div>
               </div>
 
               <div class="flex gap-3">
-                <UButton
-                  icon="i-heroicons-heart"
-                  color="neutral"
-                  variant="soft"
-                  class="rounded-full"
-                  @click="toggleFavorite"
-                >
-                  收藏
-                </UButton>
                 <UButton
                   :to="tool.url"
                   target="_blank"
@@ -65,6 +51,7 @@
                 >
                   访问官网
                 </UButton>
+                <!-- <UButton to="https://github.com/nuxt/ui" target="_blank"> 查看代码 </UButton> -->
               </div>
             </div>
           </div>
@@ -240,11 +227,6 @@ const pricingColor = computed(() => {
       return 'neutral'
   }
 })
-
-function toggleFavorite() {
-  // TODO: Implement favorite logic with user store
-  alert('收藏功能开发中...')
-}
 
 useHead({
   title: computed(() =>

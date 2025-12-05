@@ -39,25 +39,18 @@
       </p>
 
       <template #footer>
-        <div class="flex items-center justify-between pt-2">
-          <div class="flex items-center gap-1 text-yellow-500">
-            <UIcon name="i-heroicons-star-solid" class="w-4 h-4" />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{
-              tool.rating || '0.0'
-            }}</span>
-          </div>
-
-          <UButton
-            :to="`/tools/${tool.slug}`"
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            trailing-icon="i-heroicons-arrow-right"
-          >
-            Details
-          </UButton>
-        </div>
-      </template>
+      <div class="flex items-center justify-end pt-2">
+        <UButton 
+          :to="`/tools/${tool.slug}`" 
+          variant="ghost" 
+          color="neutral" 
+          size="sm"
+          trailing-icon="i-heroicons-arrow-right"
+        >
+          Details
+        </UButton>
+      </div>
+    </template>
     </UCard>
   </NuxtLink>
 </template>

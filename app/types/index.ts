@@ -18,8 +18,6 @@ export interface Tool {
   tags?: string[]
   is_free: boolean
   pricing_model?: 'free' | 'freemium' | 'paid'
-  rating: number
-  review_count: number
   created_at: string
 }
 
