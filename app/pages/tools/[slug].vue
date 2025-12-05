@@ -85,6 +85,16 @@
               <div
                 class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-wrap gap-3 items-center"
               >
+                <!-- Pricing Badge -->
+                <UBadge
+                  :color="pricingColor"
+                  variant="subtle"
+                  size="md"
+                  class="rounded-lg px-3 py-1.5 capitalize"
+                >
+                  {{ tool.pricing_model }}
+                </UBadge>
+
                 <!-- Category Badge -->
                 <UBadge
                   v-if="category"
@@ -94,16 +104,6 @@
                   class="rounded-lg px-3 py-1.5"
                 >
                   {{ category.name }}
-                </UBadge>
-
-                <!-- Pricing Badge -->
-                <UBadge
-                  :color="pricingColor"
-                  variant="subtle"
-                  size="md"
-                  class="rounded-lg px-3 py-1.5 capitalize"
-                >
-                  {{ tool.pricing_model }}
                 </UBadge>
 
                 <!-- Tags -->
