@@ -3,7 +3,14 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   css: ['~/assets/css/main.css'],
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxt/content', '@nuxt/image', '@pinia/nuxt', '@nuxt/eslint', '@nuxt/test-utils/module'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/content',
+    '@nuxt/image',
+    '@pinia/nuxt',
+    '@nuxt/eslint',
+    '@nuxt/test-utils/module',
+  ],
 
   // 自动导入配置
   imports: {
