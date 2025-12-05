@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
+  <div class="bg-gray-50 dark:bg-gray-950 pb-24">
     <UContainer class="py-8">
       <!-- 1. Breadcrumb Section -->
       <nav class="flex items-center gap-2 mb-8 text-sm text-gray-500">
@@ -47,7 +47,6 @@
                 :alt="tool.name"
                 size="3xl"
                 class="w-32 h-32 rounded-2xl ring-1 ring-gray-200 dark:ring-gray-800 bg-gray-50 dark:bg-gray-800"
-                :ui="{ rounded: 'rounded-2xl' }"
               />
             </div>
 
@@ -86,16 +85,6 @@
               <div
                 class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-wrap gap-3 items-center"
               >
-                <!-- Pricing Badge -->
-                <UBadge
-                  :color="pricingColor"
-                  variant="subtle"
-                  size="md"
-                  class="rounded-lg px-3 py-1.5 capitalize"
-                >
-                  {{ tool.pricing_model }}
-                </UBadge>
-
                 <!-- Category Badge -->
                 <UBadge
                   v-if="category"
@@ -105,6 +94,16 @@
                   class="rounded-lg px-3 py-1.5"
                 >
                   {{ category.name }}
+                </UBadge>
+
+                <!-- Pricing Badge -->
+                <UBadge
+                  :color="pricingColor"
+                  variant="subtle"
+                  size="md"
+                  class="rounded-lg px-3 py-1.5 capitalize"
+                >
+                  {{ tool.pricing_model }}
                 </UBadge>
 
                 <!-- Tags -->
@@ -124,12 +123,12 @@
         </div>
 
         <!-- 3. Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <!-- Left Column: Description & Gallery -->
           <div class="lg:col-span-2 space-y-8">
             <!-- Description Card -->
             <section
-              class="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm h-full"
+              class="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm"
             >
               <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Description</h2>
               <div
@@ -220,7 +219,7 @@
         <p class="text-gray-500 mb-6">
           The tool you are looking for does not exist or has been removed.
         </p>
-        <UButton to="/" color="neutral" variant="solid">Return Home</UButton>
+        <UButton to="/" color="gray" variant="solid">Return Home</UButton>
       </div>
     </UContainer>
   </div>
@@ -270,8 +269,8 @@ const relatedTools = computed(() => {
  * Pricing Model Badge Color
  */
 const pricingColor = computed(() => {
-  console.log(tool.value?.pricing_model)
-  switch (tool.value?.pricing_model) {
+  if (!tool.value) return 'neutral'
+  switch (tool.value.pricing_model) {
     case 'free':
       return 'primary' // Changed to primary for better visibility
     case 'paid':
@@ -279,7 +278,7 @@ const pricingColor = computed(() => {
     case 'freemium':
       return 'warning'
     default:
-      return 'gray'
+      return 'neutral'
   }
 })
 
