@@ -17,29 +17,6 @@
       class="flex justify-between items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-3"
     >
       <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ tools.length }} 个工具</p>
-      <div class="flex gap-1">
-        <UButton
-          icon="i-heroicons-arrows-up-down"
-          color="primary"
-          variant="ghost"
-          size="sm"
-          class="rounded-md"
-        />
-        <UButton
-          icon="i-heroicons-funnel"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          class="rounded-md"
-        />
-        <UButton
-          icon="i-heroicons-squares-2x2"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          class="rounded-md"
-        />
-      </div>
     </div>
 
     <!-- Grid -->
