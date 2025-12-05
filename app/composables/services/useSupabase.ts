@@ -11,6 +11,17 @@ export function useSupabaseRest() {
   const key = config.public.supabaseAnonKey
 
   /**
+   * 检查配置是否有效
+   */
+  function checkConfig() {
+    if (!base) {
+      throw new Error(
+        '[useSupabaseRest] Missing Supabase URL. Please set NUXT_PUBLIC_SUPABASE_URL in .env'
+      )
+    }
+  }
+
+  /**
    * 发送 GET 请求到 Supabase REST
    */
   async function get<T = unknown>(
@@ -18,6 +29,7 @@ export function useSupabaseRest() {
     params?: Record<string, unknown>,
     options?: FetchOptions<'json'>
   ): Promise<T> {
+    checkConfig()
     const url = `${base}/rest/v1/${path}`
     return $fetch<T>(url, {
       method: 'GET' as const,
@@ -41,6 +53,7 @@ export function useSupabaseRest() {
     params?: Record<string, unknown>,
     options?: FetchOptions<'json'>
   ): Promise<{ data: T; headers: Headers }> {
+    checkConfig()
     const url = `${base}/rest/v1/${path}`
     const res = await $fetch.raw<T>(url, {
       method: 'GET' as const,
