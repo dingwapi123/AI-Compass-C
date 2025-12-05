@@ -1,9 +1,9 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', 'PingFang SC', system-ui, sans-serif;
-  
+
   /* 自定义颜色 */
   --color-brand-50: #f0f9ff;
   --color-brand-100: #e0f2fe;
@@ -16,6 +16,11 @@
   --color-brand-800: #075985;
   --color-brand-900: #0c4a6e;
   --color-brand-950: #082f49;
+
+  /* News Page Colors */
+  --color-news-primary: #141414;
+  --color-news-bg-light: #f7f7f7;
+  --color-news-bg-dark: #191919;
 }
 
 /* 全局样式重置与基础设定 */
