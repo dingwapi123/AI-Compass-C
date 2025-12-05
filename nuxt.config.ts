@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   },
   image: {
     // 默认图片存放目录为 public
-    dir: 'public',
+    // dir: 'public',
 
     // 支持生成的图片格式
     format: ['webp', 'png', 'jpg'],
