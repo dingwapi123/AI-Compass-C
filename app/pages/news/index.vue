@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-news-bg-light dark:bg-news-bg-dark font-sans">
+  <div class="min-h-screen bg-white dark:bg-gray-950 font-sans">
     <UContainer class="py-10 flex flex-col gap-8">
       <!-- Header Section -->
       <div class="flex flex-wrap justify-between gap-3 px-4 sm:px-6 lg:px-8">

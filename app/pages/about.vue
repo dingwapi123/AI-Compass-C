@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col min-h-screen bg-news-bg-light dark:bg-news-bg-dark font-sans text-news-primary dark:text-gray-200"
+    class="flex flex-col min-h-screen bg-white dark:bg-gray-950 font-sans text-news-primary dark:text-gray-200"
   >
     <main class="flex-1 px-4 py-10 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-3xl flex flex-col gap-10">

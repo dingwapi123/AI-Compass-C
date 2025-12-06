@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen bg-news-bg-light dark:bg-news-bg-dark font-sans text-news-primary dark:text-gray-200"
+    class="min-h-screen bg-white dark:bg-gray-950 font-sans text-news-primary dark:text-gray-200"
   >
     <main class="container mx-auto px-4 py-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
