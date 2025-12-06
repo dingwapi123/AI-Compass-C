@@ -29,7 +29,25 @@
 const navItems = ref([
   { label: '首页', to: '/', icon: 'i-heroicons-home' },
   { label: '分类', to: '/categories', icon: 'i-heroicons-squares-2x2' },
-  { label: '资讯', to: '/news', icon: 'i-heroicons-newspaper' },
+  {
+    label: '资讯',
+    to: '/news',
+    icon: 'i-heroicons-newspaper',
+    children: [
+      {
+        label: '新闻资讯',
+        to: '/news',
+        description: '探索AI前沿，掌握行业发展趋势',
+        icon: 'i-heroicons-presentation-chart-line',
+      },
+      {
+        label: 'AI日报',
+        to: '/daily',
+        description: '每日精选AI热点，追踪最新行业动态',
+        icon: 'i-heroicons-clock',
+      },
+    ],
+  },
   { label: '关于', to: '/about', icon: 'i-heroicons-information-circle' },
 ])
 </script>
