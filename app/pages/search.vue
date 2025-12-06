@@ -2,39 +2,11 @@
   <div
     class="min-h-screen bg-news-bg-light dark:bg-news-bg-dark font-sans text-news-primary dark:text-gray-200"
   >
-    <!-- Search Bar Section (Top) -->
-    <div
-      class="sticky top-0 z-10 w-full bg-news-bg-light/80 dark:bg-news-bg-dark/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800"
-    >
-      <div class="container mx-auto px-4 py-4">
-        <div class="max-w-2xl mx-auto">
-          <UInput
-            v-model="searchQuery"
-            icon="i-heroicons-magnifying-glass"
-            placeholder="搜索AI工具、新闻或功能..."
-            size="lg"
-            class="w-full"
-          >
-            <template #trailing>
-              <UButton
-                v-if="searchQuery"
-                color="neutral"
-                variant="link"
-                icon="i-heroicons-x-mark"
-                :padded="false"
-                @click="searchQuery = ''"
-              />
-            </template>
-          </UInput>
-        </div>
-      </div>
-    </div>
-
     <main class="container mx-auto px-4 py-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Sidebar Filters -->
         <aside class="col-span-1">
-          <div class="sticky top-24">
+          <div class="sticky top-4">
             <div
               class="flex flex-col p-4 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm"
             >
@@ -54,58 +26,46 @@
               >
                 <!-- Categories Slot -->
                 <template #categories>
-                  <div class="pt-2 pb-4 space-y-1">
-                    <div
-                      v-for="category in categories"
-                      :key="category.value"
-                      class="flex items-center py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <UCheckbox
-                        :model-value="selectedCategories.includes(category.value)"
-                        :value="category.value"
-                        :label="category.label"
-                        :ui="{ label: 'text-sm font-normal' }"
-                        @update:model-value="(v) => toggleCategory(category.value, v)"
-                      />
-                    </div>
+                  <div class="pt-2 pb-4">
+                    <UCheckboxGroup
+                      v-model="selectedCategories"
+                      :items="categories"
+                      color="neutral"
+                      :ui="{
+                        item: 'py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors',
+                        label: 'text-sm font-normal',
+                      }"
+                    />
                   </div>
                 </template>
 
                 <!-- Pricing Slot -->
                 <template #pricing>
-                  <div class="pt-2 pb-4 space-y-1">
-                    <div
-                      v-for="price in pricingModels"
-                      :key="price.value"
-                      class="flex items-center py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <UCheckbox
-                        :model-value="selectedPricing.includes(price.value)"
-                        :value="price.value"
-                        :label="price.label"
-                        :ui="{ label: 'text-sm font-normal' }"
-                        @update:model-value="(v) => togglePricing(price.value, v)"
-                      />
-                    </div>
+                  <div class="pt-2 pb-4">
+                    <UCheckboxGroup
+                      v-model="selectedPricing"
+                      :items="pricingModels"
+                      color="neutral"
+                      :ui="{
+                        item: 'py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors',
+                        label: 'text-sm font-normal',
+                      }"
+                    />
                   </div>
                 </template>
 
                 <!-- Platforms Slot -->
                 <template #platforms>
-                  <div class="pt-2 pb-4 space-y-1">
-                    <div
-                      v-for="platform in platforms"
-                      :key="platform.value"
-                      class="flex items-center py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <UCheckbox
-                        :model-value="selectedPlatforms.includes(platform.value)"
-                        :value="platform.value"
-                        :label="platform.label"
-                        :ui="{ label: 'text-sm font-normal' }"
-                        @update:model-value="(v) => togglePlatform(platform.value, v)"
-                      />
-                    </div>
+                  <div class="pt-2 pb-4">
+                    <UCheckboxGroup
+                      v-model="selectedPlatforms"
+                      :items="platforms"
+                      color="neutral"
+                      :ui="{
+                        item: 'py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors',
+                        label: 'text-sm font-normal',
+                      }"
+                    />
                   </div>
                 </template>
               </UAccordion>
@@ -115,16 +75,32 @@
 
         <!-- Results Section -->
         <div class="col-span-1 md:col-span-3">
+          <!-- Main Search Bar -->
+          <div class="mb-8">
+            <UInput
+              v-model="searchQuery"
+              icon="i-heroicons-magnifying-glass"
+              placeholder="搜索 AI 工具、新闻或功能..."
+              size="xl"
+              class="w-full"
+            >
+              <template #trailing>
+                <UButton
+                  v-if="searchQuery"
+                  color="neutral"
+                  variant="link"
+                  icon="i-heroicons-x-mark"
+                  :padded="false"
+                  @click="searchQuery = ''"
+                />
+              </template>
+            </UInput>
+          </div>
+
           <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
             <p class="text-xl md:text-2xl font-bold">
               为您找到与 ‘{{ searchQuery || '全部' }}’ 相关的 {{ filteredTools.length }} 个AI工具
             </p>
-            <USelectMenu
-              v-model="selectedSort"
-              :options="sortOptions"
-              placeholder="排序方式"
-              class="w-36"
-            />
           </div>
 
           <!-- Tool Grid -->
@@ -193,8 +169,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from 'vue'
-
 /**
  * Search Page
  * Allows users to search and filter AI tools.
@@ -316,13 +290,10 @@ const accordionItems = [
 ]
 
 // --- State ---
-const searchQuery = ref('文案生成')
-const selectedCategories = ref<string[]>(['文本生成'])
+const searchQuery = ref('')
+const selectedCategories = ref<string[]>([])
 const selectedPricing = ref<string[]>([])
 const selectedPlatforms = ref<string[]>([])
-
-const sortOptions = ['按热度排序', '最新发布', '评分最高']
-const selectedSort = ref(sortOptions[0])
 
 const page = ref(1)
 const itemsPerPage = 12
@@ -367,33 +338,6 @@ const resetFilters = () => {
   selectedPricing.value = []
   selectedPlatforms.value = []
   searchQuery.value = ''
-}
-
-// Helper to toggle array selection for Checkboxes
-const toggleSelection = (
-  array: Ref<string[]>,
-  value: string,
-  checked: boolean | 'indeterminate'
-) => {
-  if (checked === true) {
-    if (!array.value.includes(value)) {
-      array.value.push(value)
-    }
-  } else if (checked === false) {
-    array.value = array.value.filter((v) => v !== value)
-  }
-}
-
-const toggleCategory = (value: string, checked: boolean | 'indeterminate') => {
-  toggleSelection(selectedCategories, value, checked)
-}
-
-const togglePricing = (value: string, checked: boolean | 'indeterminate') => {
-  toggleSelection(selectedPricing, value, checked)
-}
-
-const togglePlatform = (value: string, checked: boolean | 'indeterminate') => {
-  toggleSelection(selectedPlatforms, value, checked)
 }
 
 // --- Helpers ---
