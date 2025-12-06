@@ -27,9 +27,9 @@
 
 <script lang="ts" setup>
 const navItems = ref([
-  { label: 'Home', to: '/', icon: 'i-heroicons-home' },
-  { label: 'Categories', to: '/categories', icon: 'i-heroicons-squares-2x2' },
-  { label: 'News', to: '/articles', icon: 'i-heroicons-newspaper' },
-  { label: 'About', to: '/about', icon: 'i-heroicons-information-circle' },
+  { label: '首页', to: '/', icon: 'i-heroicons-home' },
+  { label: '分类', to: '/categories', icon: 'i-heroicons-squares-2x2' },
+  { label: '文章', to: '/articles', icon: 'i-heroicons-newspaper' },
+  { label: '关于', to: '/about', icon: 'i-heroicons-information-circle' },
 ])
 </script>

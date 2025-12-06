@@ -38,26 +38,18 @@
 <script lang="ts" setup>
 const columns = [
   {
-    label: 'Resources',
+    label: '资源',
     children: [
-      { label: 'Home', to: '/' },
-      { label: 'Categories', to: '/categories' },
-      { label: 'News', to: '/articles' },
+      { label: '首页', to: '/' },
+      { label: '分类', to: '/categories' },
+      { label: '文章', to: '/articles' },
     ],
   },
   {
-    label: 'Community',
+    label: '社区',
     children: [
-      { label: 'About Us', to: '/about' },
-      { label: 'Submit Tool', to: '/admin' },
+      { label: '关于我们', to: '/about' },
       { label: 'GitHub', to: 'https://github.com', target: '_blank' },
-    ],
-  },
-  {
-    label: 'Legal',
-    children: [
-      { label: 'Privacy Policy', to: '#' },
-      { label: 'Terms of Service', to: '#' },
     ],
   },
 ]
