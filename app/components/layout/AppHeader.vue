@@ -10,7 +10,12 @@
       </NuxtLink>
     </template>
 
-    <UNavigationMenu :items="navItems" />
+    <UNavigationMenu
+      :items="navItems"
+      :ui="{
+        childList: 'grid grid-cols-1 gap-2',
+      }"
+    />
 
     <template #right>
       <div class="flex items-center gap-2">
