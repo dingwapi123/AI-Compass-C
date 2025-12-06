@@ -48,7 +48,7 @@ export default defineNuxtConfig({
     '/': { swr: 3600 }, // 首页 SWR 1小时
     '/categories/**': { swr: 3600 }, // 分类页 SWR 1小时
     '/tools/**': { isr: 3600 }, // 工具详情页 ISR 1小时
-    '/articles/**': { prerender: true }, // 文章页预渲染
+    '/news/**': { prerender: true }, // 资讯页预渲染
     '/admin/**': { ssr: false }, // 后台管理 SPA
     '/search': { ssr: false }, // 搜索页 SPA
   },
