@@ -35,7 +35,7 @@
       <!-- Articles Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-8">
         <NuxtLink
-          v-for="article in filteredArticles"
+          v-for="article in paginatedArticles"
           :key="article.id"
           :to="`/news/${article.slug}`"
           class="flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 transition-shadow hover:shadow-lg dark:hover:shadow-gray-900/50 group"
@@ -65,45 +65,12 @@
       </div>
 
       <!-- Pagination -->
-      <div class="flex items-center justify-center p-4 mt-6 gap-2">
-        <button
-          class="flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-news-primary dark:text-white"
-          :disabled="currentPage === 1"
-        >
-          <UIcon name="i-heroicons-chevron-left" class="w-5 h-5" />
-        </button>
-
-        <button
-          v-for="page in [1, 2, 3]"
-          :key="page"
-          class="text-sm font-normal leading-normal flex size-10 items-center justify-center rounded-full transition-colors"
-          :class="[
-            currentPage === page
-              ? 'bg-news-primary text-white font-bold'
-              : 'text-news-primary dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800',
-          ]"
-          @click="currentPage = page"
-        >
-          {{ page }}
-        </button>
-
-        <span
-          class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-news-primary dark:text-white rounded-full"
-          >...</span
-        >
-
-        <button
-          class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-news-primary dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-          @click="currentPage = 10"
-        >
-          10
-        </button>
-
-        <button
-          class="flex size-10 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-news-primary dark:text-white"
-        >
-          <UIcon name="i-heroicons-chevron-right" class="w-5 h-5" />
-        </button>
+      <div class="flex justify-center p-4 mt-6">
+        <UPagination
+          v-model:page="currentPage"
+          :items-per-page="itemsPerPage"
+          :total="filteredArticles.length"
+        />
       </div>
     </UContainer>
   </div>
@@ -130,8 +97,14 @@ interface Article {
 // State
 const activeFilter = ref('全部')
 const currentPage = ref(1)
+const itemsPerPage = 6
 
 const filters = ['全部', '行业动态', '技术解读', '产品更新', '研究论文', '市场分析']
+
+// Watchers
+watch(activeFilter, () => {
+  currentPage.value = 1
+})
 
 // Mock Data from code.html
 const articles = ref<Article[]>([
@@ -215,6 +188,12 @@ const filteredArticles = computed(() => {
     return articles.value
   }
   return articles.value.filter((article) => article.category === activeFilter.value)
+})
+
+const paginatedArticles = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredArticles.value.slice(start, end)
 })
 
 // SEO Meta
