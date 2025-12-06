@@ -68,6 +68,8 @@
       <div class="flex justify-center p-4 mt-6">
         <UPagination
           v-model:page="currentPage"
+          active-color="neutral"
+          active-variant="solid"
           :items-per-page="itemsPerPage"
           :total="filteredArticles.length"
         />

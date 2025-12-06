@@ -158,6 +158,8 @@
           <div class="flex justify-center pt-12 mt-auto">
             <UPagination
               v-model="page"
+              active-color="neutral"
+              active-variant="solid"
               :page-count="itemsPerPage"
               :total="filteredTools.length > 0 ? filteredTools.length : 1"
             />
