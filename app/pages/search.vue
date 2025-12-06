@@ -74,7 +74,7 @@
         </aside>
 
         <!-- Results Section -->
-        <div class="col-span-1 md:col-span-3">
+        <div class="col-span-1 md:col-span-3 flex flex-col min-h-[60vh]">
           <!-- Main Search Bar -->
           <div class="mb-8">
             <UInput
@@ -155,7 +155,7 @@
           </div>
 
           <!-- Pagination -->
-          <div class="flex justify-center pt-12">
+          <div class="flex justify-center pt-12 mt-auto">
             <UPagination
               v-model="page"
               :page-count="itemsPerPage"
