@@ -70,7 +70,7 @@ export default defineNuxtConfig({
     storageKey: 'ai-compass-color-mode',
   },
   app: {
-    pageTransition: { name: 'fade', mode: 'out-in' },
+    // pageTransition: { name: 'fade', mode: 'out-in' },
     head: {
       meta: [{ name: 'color-scheme', content: 'light dark' }],
     },
