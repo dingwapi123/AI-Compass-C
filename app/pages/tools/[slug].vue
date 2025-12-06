@@ -2,34 +2,7 @@
   <div class="bg-gray-50 dark:bg-gray-950 pb-24">
     <UContainer class="py-8">
       <!-- 1. Breadcrumb Section -->
-      <nav class="flex items-center gap-2 mb-8 text-sm text-gray-500">
-        <NuxtLink
-          to="/"
-          class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-        >
-          Home
-        </NuxtLink>
-        <UIcon name="i-heroicons-chevron-right" class="w-4 h-4 text-gray-400" />
-        <NuxtLink
-          to="/categories"
-          class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-        >
-          Categories
-        </NuxtLink>
-        <template v-if="category">
-          <UIcon name="i-heroicons-chevron-right" class="w-4 h-4 text-gray-400" />
-          <NuxtLink
-            :to="`/categories/${category.slug}`"
-            class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-          >
-            {{ category.name }}
-          </NuxtLink>
-        </template>
-        <template v-if="tool">
-          <UIcon name="i-heroicons-chevron-right" class="w-4 h-4 text-gray-400" />
-          <span class="text-gray-900 dark:text-gray-200 font-medium truncate">{{ tool.name }}</span>
-        </template>
-      </nav>
+      <UBreadcrumb :items="breadcrumbItems" class="mb-8" />
 
       <div v-if="tool" class="space-y-8">
         <!-- 2. Hero Card Section -->
@@ -219,7 +192,7 @@
         <p class="text-gray-500 mb-6">
           The tool you are looking for does not exist or has been removed.
         </p>
-        <UButton to="/" color="gray" variant="solid">Return Home</UButton>
+        <UButton to="/" color="neutral" variant="solid">Return Home</UButton>
       </div>
     </UContainer>
   </div>
@@ -250,7 +223,29 @@ const tool = computed(() => {
  */
 const category = computed(() => {
   if (!tool.value) return null
-  return categories.value.find((c) => c.id === tool.value.category_id)
+  return categories.value.find((c) => c.id === tool.value!.category_id)
+})
+
+/**
+ * Breadcrumb Items
+ */
+const breadcrumbItems = computed(() => {
+  const items: { label: string; to?: string }[] = [{ label: '分类', to: '/categories' }]
+
+  if (category.value) {
+    items.push({
+      label: category.value.name,
+      to: `/categories/${category.value.slug}`,
+    })
+  }
+
+  if (tool.value) {
+    items.push({
+      label: tool.value.name,
+    })
+  }
+
+  return items
 })
 
 /**
