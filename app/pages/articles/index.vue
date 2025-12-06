@@ -1,6 +1,6 @@
 <template>
-  <UContainer>
-    <div class="flex flex-col gap-8 py-10 min-h-screen bg-white dark:dark:bg-gray-950 font-sans">
+  <div class="min-h-screen bg-news-bg-light dark:bg-news-bg-dark font-sans">
+    <UContainer class="py-10 flex flex-col gap-8">
       <!-- Header Section -->
       <div class="flex flex-wrap justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <div class="flex min-w-72 flex-col gap-2">
@@ -35,7 +35,7 @@
       <!-- Articles Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-8">
         <NuxtLink
-          v-for="article in articles"
+          v-for="article in filteredArticles"
           :key="article.id"
           :to="`/articles/${article.slug}`"
           class="flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 transition-shadow hover:shadow-lg dark:hover:shadow-gray-900/50 group"
@@ -105,8 +105,8 @@
           <UIcon name="i-heroicons-chevron-right" class="w-5 h-5" />
         </button>
       </div>
-    </div>
-  </UContainer>
+    </UContainer>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -124,6 +124,7 @@ interface Article {
   date: string
   image: string
   slug: string
+  category: string
 }
 
 // State
@@ -144,6 +145,7 @@ const articles = ref<Article[]>([
     date: '2024年5月14日',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuAfIfRffNIYoDgWN8NF8ZFLvY7NHTbOUW0BiDuSs6YMRDZ-homNtkq__l3wDJ_E3twzQV5Ef1y4b6XvKYsI6UjipYn4FCNkh1X6Uu2wIhoopPRJMWS41OVo15fw3PaM8NCQsGqttnBth22uGojW1zWo4qaNx0mrC9POE0wOudIyo-c493Cbsq8URkBPR62UBUCvLLiI8L8J9vvS19cZsv4AakrxE7e6fIeD-_TeObZZfvblsGLIc_529Zb7n4NdN-1VzIcd58sTRspj',
+    category: '产品更新',
   },
   {
     id: 2,
@@ -155,6 +157,7 @@ const articles = ref<Article[]>([
     date: '2024年5月15日',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuC5lhzodClphIRkvByQ1oDntzKIRzDBTuLrY8WmciNdoDAKjmVdMOS17QFiHh9TZSG-0GsekG14DRBtXahrNIWNoTS9LqYX1LbWdsZQgSlXUi16DBpSkf94VpwrtrACk_CZvGmRABNEr4OakLJeONkz34V3SrI1QID9Sx_ygbYxGkw0Mch5TU4dNh78S4e1_YhbwMCVS_PuwxUMsgQHLanX8QS3y9D3H1QIaZ53FnIV7NRYFXkQzEX42vLcNhQYUoVAcQjorkDu5IM8',
+    category: '行业动态',
   },
   {
     id: 3,
@@ -166,6 +169,7 @@ const articles = ref<Article[]>([
     date: '2024年6月20日',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuAfk0QwQRBC8WQF_f_9v9y9flQi-Ra5TkkZJL97jgCTSIG8oBDwIy_a3jPJb64SG2VZ7PbeCHbd_A6J7tX8-rYY9ugCNu8mvw8Qb4AdIdpeBxDvbdYG2UYSts0_2W6FmSk05wEDawwizwZ0dYgeXZCo9ptONSNHjPuHPLyNog66RkBKlXif4s6FmnkORke_tc3WxpS6VE5pBAkupFF4gOU7cCq5-350ocrdKZaKJ7YcvgZyQAzEZ9xDyHOHbQXx8j5yQ48U34tj9aIV',
+    category: '产品更新',
   },
   {
     id: 4,
@@ -177,6 +181,7 @@ const articles = ref<Article[]>([
     date: '2024年6月18日',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuAZJi88JCMJ_sJT--IJmsmrf3Pr4E9gI7kBudBhH_dGOHo-acJAc_lNOdgFwaaK2tWkJm6zwdtpzgzgFIQEA7zNuXfb_NbLtLMw503iQ66KfybtKABhvwfPWxRlHvtUzx66akmC3SXrgwHBL4httkbwXQ8v54fdUkZTxAi3_bo0PRifmocYi0pjinYBS4e5Ci6RMKxx_H1_XvyyCBG2VCa6UII26U55qnN8XkJWTPxiMOtz_wCr3LF0BwBMq4prXmn6EnNysJ09CH7v',
+    category: '技术解读',
   },
   {
     id: 5,
@@ -188,6 +193,7 @@ const articles = ref<Article[]>([
     date: '2024年6月15日',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuCr1f9v1xBAevevzE9HfWvWAgmHLjYfkYdHby8m_bDJ4M6cG4cjZGZBmeV88fGG9wWmbAFKdOUnm-Qfesg980_62nxFcf7MxnSJXpIdR2o-v4bv1oR5V0niIL8n-GPNOFu6UHhpFsANxdD8AUNC2t7_etpKbUv2mp1H7hUCJJYc78PxmYzpdrBKW54rfubDCSvx6CeJoXcLYN1CbJzZEKjzCythXjhHC8rGTvRGD8P3xM0B0h3VpqCjNfZRC407xlew7YtxkeN8LmOJ',
+    category: '研究论文',
   },
   {
     id: 6,
@@ -199,8 +205,17 @@ const articles = ref<Article[]>([
     date: '2024年6月12日',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBn655LG7I6tlPRKV6it8FCvr6OsMkS965Eg0YC8hL2hGBlF7LT_L0K_4RC7WAq2CIcEMmk-nB1ZHJ2lSgceM5tnsCr_muPs7EABpuwK1v60L4gtq0nHDsaX__rNJqKDlvFvAlmiVSYpYQ5B-CneE7pWtZUTRAc3jQnIL-zIKOZynoPl8pM2EU7RADf3X6psK8WvP6nHO3j--ARIXgy7tn6gCJlBlmGsh903IrnYChq2Oj1Gzrr8DtEwEJe6j4ueJOF2frD94ohgARW',
+    category: '市场分析',
   },
 ])
+
+// Computed
+const filteredArticles = computed(() => {
+  if (activeFilter.value === '全部') {
+    return articles.value
+  }
+  return articles.value.filter((article) => article.category === activeFilter.value)
+})
 
 // SEO Meta
 useSeoMeta({
