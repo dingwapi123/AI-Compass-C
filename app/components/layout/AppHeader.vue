@@ -29,7 +29,7 @@
 const navItems = ref([
   { label: '首页', to: '/', icon: 'i-heroicons-home' },
   { label: '分类', to: '/categories', icon: 'i-heroicons-squares-2x2' },
-  { label: '资讯', to: '/articles', icon: 'i-heroicons-newspaper' },
+  { label: '资讯', to: '/news', icon: 'i-heroicons-newspaper' },
   { label: '关于', to: '/about', icon: 'i-heroicons-information-circle' },
 ])
 </script>

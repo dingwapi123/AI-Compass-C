@@ -37,7 +37,7 @@
         <NuxtLink
           v-for="article in filteredArticles"
           :key="article.id"
-          :to="`/articles/${article.slug}`"
+          :to="`/news/${article.slug}`"
           class="flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 transition-shadow hover:shadow-lg dark:hover:shadow-gray-900/50 group"
         >
           <div
