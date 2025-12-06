@@ -230,7 +230,10 @@ const category = computed(() => {
  * Breadcrumb Items
  */
 const breadcrumbItems = computed(() => {
-  const items: { label: string; to?: string }[] = [{ label: '分类', to: '/categories' }]
+  const items: { label: string; to?: string }[] = [
+    { label: '首页', to: '/' },
+    { label: '分类', to: '/categories' },
+  ]
 
   if (category.value) {
     items.push({

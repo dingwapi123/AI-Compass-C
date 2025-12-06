@@ -35,7 +35,7 @@ const columns = [
     children: [
       { label: '首页', to: '/' },
       { label: '分类', to: '/categories' },
-      { label: '文章', to: '/articles' },
+      { label: '资讯', to: '/articles' },
     ],
   },
   {
