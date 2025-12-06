@@ -23,13 +23,6 @@
           to="https://github.com"
           target="_blank"
         />
-        <UButton
-          icon="i-simple-icons-twitter"
-          variant="ghost"
-          color="neutral"
-          to="https://twitter.com"
-          target="_blank"
-        />
       </div>
     </template>
   </UFooter>
