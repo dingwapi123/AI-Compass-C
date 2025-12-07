@@ -192,7 +192,7 @@ const generateMockData = (pageNum: number, size: number): NewsItem[] => {
       time: timeStr,
       date: dateStr,
       tags: [randomTag1, randomTag2],
-      link: '#',
+      link: 'https://maomu.com/news/123456',
     })
   }
 
