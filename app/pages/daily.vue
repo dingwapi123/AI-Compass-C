@@ -4,11 +4,11 @@
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">最新AI日报</h1>
     </div>
 
-    <div class="space-y-4">
+    <div class="h-[40rem] space-y-4">
       <div
         v-for="item in paginatedNews"
         :key="item.id"
-        class="group flex flex-col gap-4 border-b border-gray-200 pb-4 last:border-0 md:flex-row dark:border-gray-800"
+        class="group flex flex-col gap-4 border-b border-gray-200 pb-3 last:border-0 md:flex-row dark:border-gray-800"
       >
         <!-- Content Section -->
         <div class="min-w-0 flex-1">
