@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
+    '@vueuse/nuxt',
   ],
 
   // 自动导入配置
