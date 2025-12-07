@@ -8,34 +8,34 @@
       <div
         v-for="item in paginatedNews"
         :key="item.id"
-        class="flex flex-col md:flex-row gap-6 pb-8 border-b border-gray-200 dark:border-gray-800 last:border-0 group"
+        class="group flex flex-col gap-6 border-b border-gray-200 pb-8 last:border-0 md:flex-row dark:border-gray-800"
       >
         <!-- Content Section -->
-        <div class="flex-1 min-w-0">
+        <div class="min-w-0 flex-1">
           <h2
-            class="text-xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
+            class="group-hover:text-primary mb-3 line-clamp-2 cursor-pointer text-xl font-bold text-gray-900 transition-colors dark:text-white"
           >
             {{ item.title }}
           </h2>
-          <p class="text-gray-500 dark:text-gray-400 mb-4 text-sm leading-relaxed line-clamp-3">
+          <p class="mb-4 line-clamp-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
             {{ item.description }}
           </p>
 
           <div class="flex items-center gap-6 text-xs text-gray-400">
             <div class="flex items-center gap-1.5">
-              <UIcon name="i-heroicons-calendar" class="w-4 h-4" />
+              <UIcon name="i-heroicons-calendar" class="h-4 w-4" />
               <span>{{ item.date }}</span>
             </div>
           </div>
         </div>
 
         <!-- Image Section -->
-        <div class="w-full md:w-[280px] shrink-0">
-          <div class="aspect-[16/9] rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <div class="w-full shrink-0 md:w-[280px]">
+          <div class="aspect-[16/9] overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
             <NuxtImg
               :src="item.image"
               :alt="item.title"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
           </div>
@@ -44,7 +44,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-center mt-10">
+    <div class="mt-10 flex justify-center">
       <UPagination
         v-model:page="page"
         active-color="neutral"
