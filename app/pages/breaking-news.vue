@@ -21,7 +21,12 @@
           </div>
 
           <!-- Nuxt UI Timeline -->
-          <UTimeline :items="mapToTimelineItems(group.items)">
+          <UTimeline
+            :items="mapToTimelineItems(group.items)"
+            size="xl"
+            color="neutral"
+            :default-value="mapToTimelineItems(group.items).length"
+          >
             <template #title="{ item }">
               <div class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 <NuxtLink :to="item.originalData.link" target="_blank" rel="noopener noreferrer">
@@ -87,7 +92,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useIntersectionObserver } from '@vueuse/core'
 import type { TimelineItem } from '@nuxt/ui'
 
 // Types
