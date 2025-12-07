@@ -1,37 +1,37 @@
 <template>
-  <UContainer class="py-10">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">最新AI日报</h1>
+  <UContainer class="py-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">最新AI日报</h1>
     </div>
 
-    <div class="space-y-6">
+    <div class="space-y-4">
       <div
         v-for="item in paginatedNews"
         :key="item.id"
-        class="group flex flex-col gap-6 border-b border-gray-200 pb-8 last:border-0 md:flex-row dark:border-gray-800"
+        class="group flex flex-col gap-4 border-b border-gray-200 pb-4 last:border-0 md:flex-row dark:border-gray-800"
       >
         <!-- Content Section -->
         <div class="min-w-0 flex-1">
           <h2
-            class="group-hover:text-primary mb-3 line-clamp-2 cursor-pointer text-xl font-bold text-gray-900 transition-colors dark:text-white"
+            class="group-hover:text-primary mb-2 line-clamp-1 cursor-pointer text-lg font-bold text-gray-900 transition-colors dark:text-white"
           >
             {{ item.title }}
           </h2>
-          <p class="mb-4 line-clamp-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+          <p class="mb-2 line-clamp-2 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
             {{ item.description }}
           </p>
 
-          <div class="flex items-center gap-6 text-xs text-gray-400">
-            <div class="flex items-center gap-1.5">
-              <UIcon name="i-heroicons-calendar" class="h-4 w-4" />
+          <div class="flex items-center gap-4 text-xs text-gray-400">
+            <div class="flex items-center gap-1">
+              <UIcon name="i-heroicons-calendar" class="h-3.5 w-3.5" />
               <span>{{ item.date }}</span>
             </div>
           </div>
         </div>
 
         <!-- Image Section -->
-        <div class="w-full shrink-0 md:w-[280px]">
-          <div class="aspect-[16/9] overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+        <div class="w-full shrink-0 md:w-[180px]">
+          <div class="aspect-[16/9] overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
             <NuxtImg
               :src="item.image"
               :alt="item.title"
@@ -44,13 +44,13 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-10 flex justify-center">
+    <div class="mt-8 flex justify-center">
       <UPagination
         v-model:page="page"
         active-color="neutral"
         active-variant="solid"
-        :items-per-page="itemsPerPage"
         :total="dailyNews.length"
+        :items-per-page="itemsPerPage"
       />
     </div>
   </UContainer>
@@ -72,17 +72,17 @@ interface DailyNewsItem {
  * Pagination State
  */
 const page = ref(1)
-const itemsPerPage = ref(3) // Set to 3 to demonstrate pagination with 4 items
+const itemsPerPage = ref(5) // Updated to 5 items per page
 
 /**
- * Mock Data based on the user provided screenshot
+ * Mock Data
  */
 const dailyNews = ref<DailyNewsItem[]>([
   {
     id: 1,
     title: 'AI日报：可灵Avatar 2.0 上线；谷歌推出Gemini 3 Deep Think模式；阿里云析...',
     description:
-      '欢迎来到【AI日报】栏目！这里是你每天探索人工智能世界的指南，每天我们为你呈现AI领域的热点内容，聚焦开发者，助你洞悉技术趋势、了解创新AI产品应用。新鲜AI产品点击了解：https://app.aibase.com/...',
+      '欢迎来到【AI日报】栏目！这里是你每天探索人工智能世界的指南，每天我们为你呈现AI领域的热点内容，聚焦开发者，助你洞悉技术趋势、了解创新AI产品应用。',
     date: '昨天',
     image:
       'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop',
@@ -109,10 +109,46 @@ const dailyNews = ref<DailyNewsItem[]>([
     id: 4,
     title: 'AI日报：北京发布人工智能产业白皮书；字节发布视频编辑模型Vidi2；快手将发...',
     description:
-      '北京发布《人工智能产业白皮书（2025）》，预计核心产值超4500亿元。白皮书详细介绍了2025年中国人工智能大会在京召开情况，以及北京市科委发布的相关规划，聚焦AI技术趋势与创新应用，为开发者提供...',
+      '北京发布《人工智能产业白皮书（2025）》，预计核心产值超4500亿元。白皮书详细介绍了2025年中国人工智能大会在京召开情况。',
     date: '5 天前',
     image:
       'https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 5,
+    title: 'AI日报：OpenAI发布Sora 2.0预览版；Midjourney V7即将到来；Stability AI...',
+    description:
+      'OpenAI今日展示了Sora 2.0的惊人能力，生成视频的时长提升至2分钟，且保持了极高的一致性和物理模拟准确度。',
+    date: '6 天前',
+    image:
+      'https://images.unsplash.com/photo-1535378433864-48cf10419c5c?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 6,
+    title: 'AI日报：Meta推出Llama 4系列模型；Hugging Face发布新开源榜单；Anthropic...',
+    description:
+      'Meta开源了Llama 4系列模型，包含7B、13B、70B三个版本，在多项基准测试中超越了同级别的闭源模型。',
+    date: '1 周前',
+    image:
+      'https://images.unsplash.com/photo-1589254065878-42c9da9e2cb6?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 7,
+    title: 'AI日报：苹果WWDC发布Siri 2.0；微软Copilot全面升级；GitHub Copilot X...',
+    description:
+      '苹果在WWDC上发布了基于大模型的Siri 2.0，支持更自然的对话和跨应用操作。微软宣布Copilot将集成到Windows 12的核心系统层级。',
+    date: '1 周前',
+    image:
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 8,
+    title: 'AI日报：特斯拉FSD V13北美公测；Waymo扩大无人驾驶服务范围；百度Apollo...',
+    description:
+      '特斯拉FSD V13版本开始在北美地区进行大规模公测，新版本采用了端到端神经网络架构，驾驶表现更加拟人化。',
+    date: '2 周前',
+    image:
+      'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=800&auto=format&fit=crop',
   },
 ])
 
