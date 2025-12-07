@@ -157,10 +157,10 @@
           <!-- Pagination -->
           <div class="flex justify-center pt-12 mt-auto">
             <UPagination
-              v-model="page"
+              v-model:page="page"
               active-color="neutral"
               active-variant="solid"
-              :page-count="itemsPerPage"
+              :items-per-page="itemsPerPage"
               :total="filteredTools.length > 0 ? filteredTools.length : 1"
             />
           </div>
