@@ -7,7 +7,7 @@
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3">
             <UAvatar
-              :src="tool.image_url"
+              :src="tool.icon || (tool.images && tool.images[0]) || ''"
               :alt="tool.name"
               size="md"
               class="bg-gray-50 dark:bg-gray-800 rounded-xl"
@@ -20,13 +20,13 @@
               </h3>
               <div class="flex gap-2 mt-1">
                 <UBadge
-                  v-if="tool.pricing_model"
+                  v-if="tool.pricing"
                   :color="pricingColor"
                   variant="subtle"
                   size="xs"
                   class="capitalize"
                 >
-                  {{ tool.pricing_model }}
+                  {{ tool.pricing }}
                 </UBadge>
               </div>
             </div>

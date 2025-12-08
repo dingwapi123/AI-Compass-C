@@ -50,7 +50,7 @@
             <div class="flex items-center gap-4">
               <UAvatar
                 :src="
-                  tool.image_url ||
+                  (tool.images && tool.images[0]) ||
                   `https://ui-avatars.com/api/?name=${tool.name}&background=random`
                 "
                 :alt="tool.name"
@@ -155,9 +155,9 @@ import { storeToRefs } from 'pinia'
 const toolsStore = useToolsStore()
 const { tools, categories } = storeToRefs(toolsStore)
 
-// Initialize data
-await toolsStore.fetchCategories()
-await toolsStore.fetchTools()
+// Initialize data (严格模式：不回退到 mock)
+await toolsStore.fetchCategories({ noMock: true })
+await toolsStore.fetchTools(undefined, { noMock: true })
 
 // State
 const selectedCategory = ref('all')

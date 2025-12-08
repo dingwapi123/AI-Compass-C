@@ -4,7 +4,7 @@ export interface Category {
   slug: string
   icon?: string
   description?: string
-  parent_id?: string
+  created_at: string
 }
 
 export interface Tool {
@@ -13,12 +13,13 @@ export interface Tool {
   slug: string
   description: string
   url: string
-  image_url?: string
+  icon?: string
+  images: string[]
   category_id: string
   tags?: string[]
-  is_free: boolean
-  pricing_model?: 'free' | 'freemium' | 'paid'
+  pricing: 'free' | 'paid' | 'freemium'
   created_at: string
+  updated_at?: string
 }
 
 export interface Review {

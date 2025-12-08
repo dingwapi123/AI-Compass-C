@@ -3,9 +3,7 @@
     <div
       class="w-full bg-gray-200 dark:bg-gray-800 aspect-square bg-cover rounded-xl bg-center transition-transform duration-300 group-hover:scale-[1.02]"
       :style="{
-        backgroundImage: `url(${
-          tool.image_url || `https://ui-avatars.com/api/?name=${tool.name}&background=random`
-        })`,
+        backgroundImage: `url(${(tool.icon || (tool.images && tool.images[0]) || `https://ui-avatars.com/api/?name=${tool.name}&background=random`)})`,
       }"
     />
     <div class="flex flex-col gap-1">
