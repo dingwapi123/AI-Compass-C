@@ -11,7 +11,15 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
     '@vueuse/nuxt',
+    '@nuxtjs/supabase',
   ],
+
+  // Supabase Configuration
+  supabase: {
+    url: process.env.NUXT_PUBLIC_SUPABASE_URL,
+    key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
+    redirect: false,
+  },
 
   // 自动导入配置
   imports: {
