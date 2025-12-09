@@ -90,7 +90,39 @@
 
           <!-- Tool Grid -->
           <div v-if="loading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            <USkeleton v-for="i in 6" :key="i" class="h-64 w-full rounded-xl" />
+            <div
+              v-for="i in 6"
+              :key="i"
+              class="flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-800/50"
+            >
+              <div class="p-5">
+                <div class="mb-3 flex items-start gap-4">
+                  <!-- Icon Skeleton -->
+                  <USkeleton class="h-12 w-12 rounded-lg" :ui="{ rounded: 'rounded-lg' }" />
+                  <div class="flex-1 space-y-2">
+                    <!-- Title Skeleton -->
+                    <USkeleton class="h-5 w-3/4" />
+                    <!-- Description Skeleton -->
+                    <USkeleton class="h-4 w-full" />
+                    <USkeleton class="h-4 w-2/3" />
+                  </div>
+                </div>
+                <!-- Tags Skeleton -->
+                <div class="mt-4 flex flex-wrap gap-2">
+                  <USkeleton class="h-5 w-16 rounded-full" />
+                  <USkeleton class="h-5 w-12 rounded-full" />
+                  <USkeleton class="h-5 w-20 rounded-full" />
+                </div>
+              </div>
+              <!-- Footer Skeleton -->
+              <div
+                class="border-t border-gray-200 bg-gray-50 px-5 py-3 dark:border-gray-700/50 dark:bg-gray-800/30"
+              >
+                <div class="flex items-center justify-center">
+                  <USkeleton class="h-5 w-24" />
+                </div>
+              </div>
+            </div>
           </div>
           <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             <div
