@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     dirs: [
       'composables/**', // 递归扫描 composables 目录
       'services/**', // 递归扫描 services 目录
+      'stores/**', // 递归扫描 stores 目录
     ],
   },
   image: {
