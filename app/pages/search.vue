@@ -245,17 +245,13 @@ const queryParams = computed(() => ({
 }))
 
 // 获取数据
-// 使用 server-side pagination
-await useAsyncData(
-  'search-data',
-  async () => {
-    await Promise.all([toolsStore.fetchCategories(), toolsStore.searchTools(queryParams.value)])
-    return true
-  },
-  {
-    watch: [queryParams], // 监听参数变化自动重新请求
-  }
-)
+// 1. 获取分类 (只在初始化时获取一次)
+await useAsyncData('categories', () => toolsStore.fetchCategories())
+
+// 2. 获取工具列表 (监听 queryParams 变化)
+await useAsyncData('search-tools', () => toolsStore.searchTools(queryParams.value), {
+  watch: [queryParams], // 监听参数变化自动重新请求
+})
 
 // --- Filter Options ---
 
