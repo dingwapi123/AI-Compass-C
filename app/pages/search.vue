@@ -194,10 +194,7 @@ const { tools, categories, loading } = storeToRefs(toolsStore)
 // We fetch all tools for client-side filtering for now.
 // For large datasets, this should be server-side filtered.
 await useAsyncData('search-data', async () => {
-  await Promise.all([
-    toolsStore.fetchCategories(),
-    toolsStore.fetchTools()
-  ])
+  await Promise.all([toolsStore.fetchCategories(), toolsStore.fetchTools()])
   return true
 })
 
@@ -283,7 +280,7 @@ const resetFilters = () => {
 const getTagColor = (tag: string) => {
   if (tag === 'paid' || tag === '付费') return 'info'
   if (tag === 'free' || tag === '免费') return 'success'
-  if (tag === 'freemium' || tag === '免费试用') return 'primary'
+  if (tag === 'freemium' || tag === '免费试用') return 'warning'
   return 'neutral'
 }
 

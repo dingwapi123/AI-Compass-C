@@ -64,7 +64,7 @@ const pricingColor = computed(() => {
     case 'free':
       return 'success'
     case 'paid':
-      return 'error'
+      return 'info'
     case 'freemium':
       return 'warning'
     default:
