@@ -193,8 +193,13 @@ const { tools, categories, loading } = storeToRefs(toolsStore)
 // Fetch Data
 // We fetch all tools for client-side filtering for now.
 // For large datasets, this should be server-side filtered.
-await toolsStore.fetchCategories()
-await toolsStore.fetchTools()
+await useAsyncData('search-data', async () => {
+  await Promise.all([
+    toolsStore.fetchCategories(),
+    toolsStore.fetchTools()
+  ])
+  return true
+})
 
 // --- Filter Options ---
 

@@ -61,8 +61,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
-      supabasePublishableKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '', // 兼容官方写法
-      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '', // 保留旧的 key 命名以防万一
+      supabasePublishableKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
     },
     supabaseServiceRoleKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
   },

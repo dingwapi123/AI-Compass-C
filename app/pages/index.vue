@@ -1,18 +1,18 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-950">
     <!-- Hero Section -->
-    <section class="py-20 bg-white dark:bg-gray-950 text-center">
+    <section class="bg-white py-20 text-center dark:bg-gray-950">
       <UContainer>
         <h1
-          class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight"
+          class="mb-4 text-4xl font-bold tracking-tight text-gray-900 md:text-6xl dark:text-white"
         >
           探索AI的世界
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 text-lg">
+        <p class="text-lg text-gray-500 dark:text-gray-400">
           您的最佳AI工具导航，为您精心挑选和分类。
         </p>
 
-        <div class="mt-8 mx-auto">
+        <div class="mx-auto mt-8">
           <UInput
             placeholder="搜索AI工具..."
             size="xl"
@@ -36,16 +36,16 @@
     <!-- Hot Tools Section -->
     <section class="pb-12">
       <UContainer>
-        <div class="flex items-center gap-2 mb-6">
+        <div class="mb-6 flex items-center gap-2">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white">热门AI工具</h2>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <NuxtLink
             v-for="tool in hotTools"
             :key="tool.id"
             :to="`/tools/${tool.slug}`"
-            class="group block bg-white dark:bg-gray-900 rounded-md p-4 border border-gray-300 dark:border-gray-800 hover:border-gray-800 hover:dark:border-gray-300 transition-shadow"
+            class="group block rounded-md border border-gray-300 bg-white p-4 transition-shadow hover:border-gray-800 dark:border-gray-800 dark:bg-gray-900 hover:dark:border-gray-300"
           >
             <div class="flex items-center gap-4">
               <UAvatar
@@ -57,19 +57,19 @@
                 size="md"
                 class="rounded-lg"
               />
-              <div class="flex-1 min-w-0">
+              <div class="min-w-0 flex-1">
                 <h3
-                  class="font-semibold text-gray-900 dark:text-white truncate group-hover:text-primary-500 transition-colors"
+                  class="group-hover:text-primary-500 truncate font-semibold text-gray-900 transition-colors dark:text-white"
                 >
                   {{ tool.name }}
                 </h3>
-                <p class="text-xs text-gray-500 truncate">
+                <p class="truncate text-xs text-gray-500">
                   {{ tool.description }}
                 </p>
               </div>
               <UIcon
                 name="i-heroicons-arrow-right"
-                class="w-5 h-5 text-gray-300 group-hover:text-primary-500 transition-colors"
+                class="group-hover:text-primary-500 h-5 w-5 text-gray-300 transition-colors"
               />
             </div>
           </NuxtLink>
@@ -80,12 +80,12 @@
     <!-- Main Content -->
     <section class="pb-20">
       <UContainer>
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div class="grid grid-cols-1 gap-10 lg:grid-cols-12">
           <!-- Left Column: Categories & Tools Grid (8 cols) -->
-          <div class="lg:col-span-8 space-y-8">
+          <div class="space-y-8 lg:col-span-8">
             <!-- Categories Tabs -->
             <div>
-              <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">AI工具分类</h2>
+              <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">AI工具分类</h2>
               <div class="flex flex-wrap gap-2">
                 <UButton
                   v-for="category in allCategories"
@@ -102,7 +102,7 @@
             </div>
 
             <!-- Tools List -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <ToolCard v-for="tool in filteredTools" :key="tool.id" :tool="tool" class="h-full" />
             </div>
 
@@ -114,7 +114,7 @@
                 color="neutral"
                 size="lg"
                 trailing-icon="i-heroicons-arrow-right"
-                class="px-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                class="px-8 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 浏览全部工具库
               </UButton>
@@ -122,19 +122,19 @@
           </div>
 
           <!-- Right Column: Latest News (4 cols) -->
-          <div class="lg:col-span-4 space-y-6">
+          <div class="space-y-6 lg:col-span-4">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">最新资讯</h2>
 
             <div class="space-y-4">
               <div
                 v-for="(news, index) in latestNews"
                 :key="index"
-                class="bg-white dark:bg-gray-900 rounded-xl p-5 border border-gray-300 dark:border-gray-800 hover:border-primary-200 dark:hover:border-primary-800 transition-colors cursor-pointer"
+                class="hover:border-primary-200 dark:hover:border-primary-800 cursor-pointer rounded-xl border border-gray-300 bg-white p-5 transition-colors dark:border-gray-800 dark:bg-gray-900"
               >
-                <h3 class="font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                <h3 class="mb-2 line-clamp-2 font-bold text-gray-900 dark:text-white">
                   {{ news.title }}
                 </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">
+                <p class="mb-3 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
                   {{ news.summary }}
                 </p>
                 <div class="text-xs text-gray-400">
@@ -155,9 +155,11 @@ import { storeToRefs } from 'pinia'
 const toolsStore = useToolsStore()
 const { tools, categories } = storeToRefs(toolsStore)
 
-// Initialize data (严格模式：不回退到 mock)
-await toolsStore.fetchCategories({ noMock: true })
-await toolsStore.fetchTools(undefined, { noMock: true })
+// Initialize data (使用 useAsyncData 确保服务端/客户端数据同步，避免水合错误)
+await useAsyncData('home-data', async () => {
+  await Promise.all([toolsStore.fetchCategories(), toolsStore.fetchTools()])
+  return true
+})
 
 // State
 const selectedCategory = ref('all')
