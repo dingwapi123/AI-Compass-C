@@ -84,7 +84,7 @@
 
           <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <p class="text-xl font-bold md:text-2xl">
-              为您找到与 ‘{{ searchQuery || '全部' }}’ 相关的 {{ filteredTools.length }} 个AI工具
+              为您找到与 ‘{{ searchQuery || '全部' }}’ 相关的 {{ totalTools }} 个AI工具
             </p>
           </div>
 
@@ -94,7 +94,7 @@
           </div>
           <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             <div
-              v-for="tool in paginatedTools"
+              v-for="tool in tools"
               :key="tool.id"
               class="group flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-800/50"
             >
@@ -167,7 +167,7 @@
               active-color="neutral"
               active-variant="solid"
               :items-per-page="itemsPerPage"
-              :total="filteredTools.length > 0 ? filteredTools.length : 1"
+              :total="totalTools"
             />
           </div>
         </div>
@@ -180,7 +180,7 @@
 /**
  * Search Page
  * Allows users to search and filter AI tools.
- * Uses real data from Supabase via useToolsStore.
+ * Uses real data from Supabase via useToolsStore with server-side pagination.
  */
 import { storeToRefs } from 'pinia'
 
@@ -190,15 +190,40 @@ useSeoMeta({
 })
 
 const toolsStore = useToolsStore()
-const { tools, categories, loading } = storeToRefs(toolsStore)
+const { tools, categories, totalTools, loading } = storeToRefs(toolsStore)
 
-// Fetch Data
-// We fetch all tools for client-side filtering for now.
-// For large datasets, this should be server-side filtered.
-await useAsyncData('search-data', async () => {
-  await Promise.all([toolsStore.fetchCategories(), toolsStore.fetchTools()])
-  return true
-})
+// --- State ---
+const route = useRoute()
+const searchQuery = ref((route.query.q as string) || '')
+const selectedCategoryIds = ref<string[]>([]) // Store Category IDs
+const selectedPricing = ref<string[]>([])
+
+const page = ref(1)
+const itemsPerPage = 6
+
+// --- Data Fetching ---
+
+// 构建查询参数
+const queryParams = computed(() => ({
+  page: page.value,
+  pageSize: itemsPerPage,
+  search: searchQuery.value,
+  categoryIds: selectedCategoryIds.value,
+  pricing: selectedPricing.value,
+}))
+
+// 获取数据
+// 使用 server-side pagination
+await useAsyncData(
+  'search-data',
+  async () => {
+    await Promise.all([toolsStore.fetchCategories(), toolsStore.searchTools(queryParams.value)])
+    return true
+  },
+  {
+    watch: [queryParams], // 监听参数变化自动重新请求
+  }
+)
 
 // --- Filter Options ---
 
@@ -228,49 +253,6 @@ const accordionItems = [
   },
 ]
 
-// --- State ---
-const route = useRoute()
-const searchQuery = ref((route.query.q as string) || '')
-const selectedCategoryIds = ref<string[]>([]) // Store Category IDs
-const selectedPricing = ref<string[]>([])
-
-const page = ref(1)
-const itemsPerPage = 6
-
-// --- Computed ---
-const filteredTools = computed(() => {
-  let result = tools.value
-
-  // Search Query
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(
-      (tool) =>
-        tool.name.toLowerCase().includes(query) ||
-        tool.description.toLowerCase().includes(query) ||
-        (tool.tags && tool.tags.some((tag) => tag.toLowerCase().includes(query)))
-    )
-  }
-
-  // Categories
-  if (selectedCategoryIds.value.length > 0) {
-    result = result.filter((tool) => selectedCategoryIds.value.includes(tool.category_id))
-  }
-
-  // Pricing
-  if (selectedPricing.value.length > 0) {
-    result = result.filter((tool) => selectedPricing.value.includes(tool.pricing))
-  }
-
-  return result
-})
-
-const paginatedTools = computed(() => {
-  const start = (page.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredTools.value.slice(start, end)
-})
-
 // --- Methods ---
 const resetFilters = () => {
   selectedCategoryIds.value = []
@@ -288,6 +270,7 @@ const getTagColor = (tag: string) => {
 }
 
 // Watchers
+// 当筛选条件变化时，重置页码到第一页
 watch([searchQuery, selectedCategoryIds, selectedPricing], () => {
   page.value = 1
 })

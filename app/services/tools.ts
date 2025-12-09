@@ -76,20 +76,62 @@ export const fetchToolsByCategory = async (categoryId: string, limit?: number): 
 }
 
 /**
- * 获取所有工具
+ * 获取工具列表（支持分页和搜索）
+ * @param params 查询参数
+ * @returns Promise<{ data: Tool[], count: number }> - 返回工具列表和总数
+ */
+export const fetchTools = async (
+  params: {
+    page?: number
+    pageSize?: number
+    search?: string
+    categoryIds?: string[]
+    pricing?: string[]
+  } = {}
+): Promise<{ data: Tool[]; count: number }> => {
+  const supabase = useSupabaseClient()
+  const { page = 1, pageSize = 12, search, categoryIds, pricing } = params
+
+  // 1. 构建基础查询
+  let query = supabase.from('tools').select('*', { count: 'exact' }) // 请求总数
+
+  // 2. 应用过滤条件
+  if (search) {
+    // 简单的模糊搜索，匹配名称或描述
+    // 注意：Supabase 的 ilike 语法是 'column.ilike.%value%'
+    query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`)
+  }
+
+  if (categoryIds && categoryIds.length > 0) {
+    query = query.in('category_id', categoryIds)
+  }
+
+  if (pricing && pricing.length > 0) {
+    query = query.in('pricing', pricing)
+  }
+
+  // 3. 应用分页
+  // range 是 0-based index
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  query = query.order('created_at', { ascending: false }).range(from, to)
+
+  const { data, error, count } = await query
+
+  if (error) {
+    console.error('Error fetching tools:', error)
+    return { data: [], count: 0 }
+  }
+
+  return { data: data as Tool[], count: count || 0 }
+}
+
+/**
+ * 获取所有工具（保留原有 API 兼容性，但建议迁移到 fetchTools）
  * @returns Promise<Tool[]> - 返回所有工具列表
  */
 export const fetchAllTools = async (): Promise<Tool[]> => {
-  const supabase = useSupabaseClient()
-  const { data, error } = await supabase
-    .from('tools')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('Error fetching all tools:', error)
-    return []
-  }
-
-  return data as Tool[]
+  const { data } = await fetchTools({ pageSize: 1000 })
+  return data
 }
