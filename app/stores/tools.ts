@@ -1,85 +1,71 @@
 import { defineStore } from 'pinia'
 import type { Tool, Category } from '~/types'
+import { fetchCategories, fetchAllTools, fetchToolsByCategory } from '~/services/tools'
 
 export const useToolsStore = defineStore('tools', () => {
-  const tools = ref<Tool[]>([])
   const categories = ref<Category[]>([])
+  const tools = ref<Tool[]>([])
   const loading = ref(false)
-
-  // 使用 Service 层
-  const toolService = useToolService()
-  const categoryService = useCategoryService()
+  const error = ref<string | null>(null)
 
   /**
-   * 函数: fetchCategories
-   * 作用: 从 Supabase 加载分类
+   * 获取并存储所有分类
    */
-  async function fetchCategories() {
+  const fetchCategoriesAction = async () => {
+    // 如果已经有数据，可以选择不再请求，或者强制刷新
+    // 这里简单起见，每次都请求
+    loading.value = true
     try {
-      loading.value = true
-      const data = await categoryService.fetchCategories()
+      const data = await fetchCategories()
       categories.value = data
     } catch (e) {
-      console.error('Failed to fetch categories:', e)
+      console.error('Store: Error fetching categories', e)
+      error.value = (e as Error).message
     } finally {
       loading.value = false
     }
   }
 
   /**
-   * 函数: fetchTools
-   * 作用: 从 Supabase 加载工具
+   * 获取所有工具
    */
-  async function fetchTools(params?: Record<string, unknown>) {
+  const fetchToolsAction = async () => {
+    loading.value = true
     try {
-      loading.value = true
-      const data = await toolService.fetchTools(params)
+      const data = await fetchAllTools()
       tools.value = data
-      return data
     } catch (e) {
-      console.error('Failed to fetch tools:', e)
-      return []
+      console.error('Store: Error fetching tools', e)
+      error.value = (e as Error).message
     } finally {
       loading.value = false
     }
   }
 
-  async function getToolBySlug(slug: string) {
-    // First check store
-    const existing = tools.value.find((t) => t.slug === slug)
-    if (existing) return existing
-
-    // Then fetch
-    try {
-      return await toolService.fetchToolBySlug(slug)
-    } catch {
-      return undefined
-    }
-  }
-
   /**
-   * 搜索工具
+   * 根据分类获取工具（更新 tools 状态）
+   * 注意：这会覆盖当前的 tools 列表
    */
-  async function searchTools(query: string) {
+  const fetchToolsByCategoryAction = async (categoryId: string) => {
+    loading.value = true
     try {
-      loading.value = true
-      const data = await toolService.searchTools(query)
-      return data
+      const data = await fetchToolsByCategory(categoryId)
+      tools.value = data
     } catch (e) {
-      console.error('Search failed:', e)
-      return []
+      console.error(`Store: Error fetching tools for category ${categoryId}`, e)
+      error.value = (e as Error).message
     } finally {
       loading.value = false
     }
   }
 
   return {
-    tools,
     categories,
+    tools,
     loading,
-    fetchCategories,
-    fetchTools,
-    getToolBySlug,
-    searchTools,
+    error,
+    fetchCategories: fetchCategoriesAction,
+    fetchTools: fetchToolsAction,
+    fetchToolsByCategory: fetchToolsByCategoryAction,
   }
 })

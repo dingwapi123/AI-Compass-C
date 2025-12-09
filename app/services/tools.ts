@@ -1,102 +1,95 @@
-import type { Tool } from '~/types'
+import type { Tool, Category } from '~/types'
+import { useSupabaseClient } from '~/composables/useSupabase'
 
 /**
- * 工具服务
- * 处理所有与工具相关的 API 请求
+ * 从 Supabase 随机获取工具列表
+ * @param count - 需要获取的工具数量，默认为 4
+ * @returns Promise<Tool[]> - 返回随机的工具列表
  */
-export const useToolService = () => {
-  const client = useSupabaseClient()
+export const fetchRandomTools = async (count: number = 4): Promise<Tool[]> => {
+  const supabase = useSupabaseClient()
 
-  /**
-   * 获取工具列表
-   */
-  const fetchTools = async (params: Record<string, any> = {}): Promise<Tool[]> => {
-    try {
-      const {
-        select = 'id,name,slug,description,url,icon,images,tags,pricing,category_id,created_at,updated_at',
-        order = 'created_at.desc',
-        page,
-        pageSize,
-        limit,
-        ...filters
-      } = params
+  // 这里我们获取最新的 20 条数据，然后在前端进行随机打乱取前 count 条
+  // 这样可以避免复杂的 SQL 随机查询，对于小数据量场景足够高效
+  const { data, error } = await supabase
+    .from('tools')
+    .select('*')
+    .limit(20)
+    .order('created_at', { ascending: false })
 
-      let query = client.from('tools').select(select)
-
-      // 处理过滤条件
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value === undefined || value === null) return
-
-        // 简单处理：如果是字符串且包含 . 则尝试解析操作符，否则默认为 eq
-        // 这里为了兼容性，保留一些基础逻辑，但更推荐直接传入处理好的 filters
-        // 由于直接使用 supabase client，建议 params 尽量保持简单，复杂查询在 Service 内部构建
-        query = query.eq(key, value)
-      })
-
-      // 处理排序
-      if (order) {
-        const [column, direction] = order.split('.')
-        query = query.order(column, { ascending: direction === 'asc' })
-      }
-
-      // 处理分页
-      if (page && pageSize) {
-        const from = (page - 1) * pageSize
-        const to = from + pageSize - 1
-        query = query.range(from, to)
-      } else if (limit) {
-        query = query.limit(limit)
-      }
-
-      const { data, error } = await query
-
-      if (error) throw error
-      return (data as Tool[]) || []
-    } catch (e) {
-      console.error('Failed to fetch tools:', e)
-      return []
-    }
+  if (error) {
+    console.error('Error fetching random tools:', error)
+    return []
   }
 
-  /**
-   * 根据 Slug 获取单个工具
-   */
-  const fetchToolBySlug = async (slug: string): Promise<Tool | null> => {
-    try {
-      const { data, error } = await client.from('tools').select('*').eq('slug', slug).single()
+  if (!data) return []
 
-      if (error) throw error
-      return data as Tool
-    } catch (e) {
-      console.error(`Failed to fetch tool with slug ${slug}:`, e)
-      return null
-    }
+  // 随机打乱数组
+  const shuffled = data.sort(() => 0.5 - Math.random())
+
+  // 返回前 count 条
+  return shuffled.slice(0, count) as Tool[]
+}
+
+/**
+ * 获取所有分类
+ * @returns Promise<Category[]> - 返回分类列表
+ */
+export const fetchCategories = async (): Promise<Category[]> => {
+  const supabase = useSupabaseClient()
+  const { data, error } = await supabase.from('categories').select('*').order('name')
+
+  if (error) {
+    console.error('Error fetching categories:', error)
+    return []
   }
 
-  /**
-   * 搜索工具
-   */
-  const searchTools = async (query: string): Promise<Tool[]> => {
-    if (!query) return []
-    try {
-      const { data, error } = await client
-        .from('tools')
-        .select('*')
-        .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
-        .order('created_at', { ascending: false })
-        .limit(20)
+  return data as Category[]
+}
 
-      if (error) throw error
-      return (data as Tool[]) || []
-    } catch (e) {
-      console.error('Search failed:', e)
-      return []
-    }
+/**
+ * 根据分类 ID 获取工具列表
+ * @param categoryId - 分类 ID
+ * @param limit - 获取数量限制，可选
+ * @returns Promise<Tool[]> - 返回该分类下的工具列表
+ */
+export const fetchToolsByCategory = async (categoryId: string, limit?: number): Promise<Tool[]> => {
+  const supabase = useSupabaseClient()
+  let query = supabase
+    .from('tools')
+    .select('*')
+    .eq('category_id', categoryId)
+    .order('created_at', { ascending: false })
+
+  if (limit) {
+    query = query.limit(limit)
   }
 
-  return {
-    fetchTools,
-    fetchToolBySlug,
-    searchTools,
+  const { data, error } = await query
+
+  if (error) {
+    console.error(`Error fetching tools for category ${categoryId}:`, error)
+    return []
   }
+
+  return data as Tool[]
+}
+
+/**
+ * 获取所有工具
+ * @returns Promise<Tool[]> - 返回所有工具列表
+ */
+export const fetchAllTools = async (): Promise<Tool[]> => {
+  const supabase = useSupabaseClient()
+  const { data, error } = await supabase
+    .from('tools')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching all tools:', error)
+    return []
+  }
+
+  return data as Tool[]
 }

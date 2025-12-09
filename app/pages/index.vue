@@ -94,7 +94,7 @@
                   :variant="selectedCategory === category.id ? 'solid' : 'soft'"
                   size="sm"
                   class="rounded-full px-4"
-                  @click="selectedCategory = category.id"
+                  @click="handleCategoryChange(category.id)"
                 >
                   {{ category.name }}
                 </UButton>
@@ -150,44 +150,41 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { fetchRandomTools, fetchCategories, fetchToolsByCategory } from '~/services/tools'
+import type { Tool, Category } from '~/types'
 
-const toolsStore = useToolsStore()
-const { tools, categories } = storeToRefs(toolsStore)
-
-// 初始化数据：获取分类 + 获取工具
-await useAsyncData('home-data', async () => {
-  await Promise.all([
-    toolsStore.fetchCategories(),
-    // 默认请求前 4 条数据
-    toolsStore.fetchTools({ limit: 4 }),
-  ])
-  return true
+// 1. Hot Tools: 使用 useAsyncData 在服务端预取数据
+const { data: hotTools } = await useAsyncData<Tool[]>('home-hot-tools', () => fetchRandomTools(4), {
+  default: () => [],
 })
 
-// 状态
-const selectedCategory = ref('all')
-
-// 监听分类切换
-watch(selectedCategory, async (newId) => {
-  if (newId === 'all') {
-    await toolsStore.fetchTools({ limit: 4 })
-  } else {
-    await toolsStore.fetchTools({ category_id: newId, limit: 4 })
+// 2. Categories: 获取所有分类
+const { data: allCategories } = await useAsyncData<Category[]>(
+  'home-categories',
+  () => fetchCategories(),
+  {
+    default: () => [],
   }
-})
+)
 
-// 添加“全部”选项
-const allCategories = computed(() => [
-  { id: 'all', name: '全部', slug: 'all' },
-  ...categories.value,
-])
+// 3. Filtered Tools Logic
+const selectedCategory = ref('')
+const filteredTools = ref<Tool[]>([])
 
-// 热门工具：直接使用当前 tools (因为我们只请求了 4 条)
-const hotTools = computed(() => tools.value)
+// 切换分类的处理函数
+const handleCategoryChange = async (categoryId: string) => {
+  selectedCategory.value = categoryId
+  // 获取该分类下的 4 条数据
+  filteredTools.value = await fetchToolsByCategory(categoryId, 4)
+}
 
-// 列表工具：同上
-const filteredTools = computed(() => tools.value)
+// 初始化：如果存在分类，默认选中第一个并加载数据
+if (allCategories.value && allCategories.value.length > 0) {
+  const firstCategory = allCategories.value[0]
+  if (firstCategory) {
+    await handleCategoryChange(firstCategory.id)
+  }
+}
 
 // Mock News Data
 const latestNews = [
@@ -207,11 +204,4 @@ const latestNews = [
     date: '2024年5月10日',
   },
 ]
-
-// Update categories list to include 'All' logic in template
-// We'll just use a local computed for the categories display
-// Note: In real app, 'allCategories' logic might be better handled here
-// But for now I'll just update the v-for to iterate over `allCategories`
-// Wait, I can just use the existing `categories` and prepend 'All' manually in template or computed.
-// Let's stick to the computed `allCategories` logic above, but I need to rename the v-for source.
 </script>
