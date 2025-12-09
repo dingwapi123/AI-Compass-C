@@ -9,23 +9,23 @@ let clientInstance: ReturnType<typeof createClient> | null = null
  */
 export const useSupabaseClient = () => {
   const config = useRuntimeConfig()
+  const supabaseUrl = config.public.supabaseUrl || ''
+  const supabaseKey = config.public.supabasePublishableKey || ''
 
   // 服务端：每次请求创建一个新实例，避免请求间状态污染（虽然 Supabase JS client 本身大多是无状态的，除了 Auth）
   // 如果你的应用不涉及服务端 Auth 操作，也可以考虑在服务端使用单例。
   // 但为了安全起见，SSR 期间最好是新实例。
   if (import.meta.server) {
-    const supabaseUrl = config.public.supabaseUrl
-    const supabaseKey = config.public.supabasePublishableKey
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('[Supabase] Missing supabaseUrl or supabaseKey on server')
+    }
     return createClient(supabaseUrl, supabaseKey)
   }
 
   // 客户端：使用单例模式，避免重复创建
   if (!clientInstance) {
-    const supabaseUrl = config.public.supabaseUrl
-    const supabaseKey = config.public.supabasePublishableKey
-
     if (!supabaseUrl || !supabaseKey) {
-      console.warn('Supabase URL or Key is missing!')
+      console.warn('[Supabase] Supabase URL or Key is missing on client')
     }
 
     clientInstance = createClient(supabaseUrl, supabaseKey)
