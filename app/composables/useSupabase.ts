@@ -15,14 +15,14 @@ export const useSupabaseClient = () => {
   // 但为了安全起见，SSR 期间最好是新实例。
   if (import.meta.server) {
     const supabaseUrl = config.public.supabaseUrl
-    const supabaseKey = config.public.supabasePublishableKey || config.public.supabaseAnonKey
+    const supabaseKey = config.public.supabasePublishableKey
     return createClient(supabaseUrl, supabaseKey)
   }
 
   // 客户端：使用单例模式，避免重复创建
   if (!clientInstance) {
     const supabaseUrl = config.public.supabaseUrl
-    const supabaseKey = config.public.supabasePublishableKey || config.public.supabaseAnonKey
+    const supabaseKey = config.public.supabasePublishableKey
 
     if (!supabaseUrl || !supabaseKey) {
       console.warn('Supabase URL or Key is missing!')
