@@ -1,4 +1,4 @@
-import { defineStore } from "pinia"
+import { defineStore } from 'pinia'
 
 type State = {
   keyword: string
@@ -8,8 +8,8 @@ type State = {
 /**
  * 搜索状态：关键词与历史记录
  */
-export const useSearchStore = defineStore("search", {
-  state: (): State => ({ keyword: "", history: [] }),
+export const useSearchStore = defineStore('search', {
+  state: (): State => ({ keyword: '', history: [] }),
   actions: {
     /**
      * 添加搜索词到历史记录
@@ -40,9 +40,11 @@ export const useSearchStore = defineStore("search", {
     load() {
       if (import.meta.client) {
         try {
-          const raw = localStorage.getItem("ai-compass-search-history")
+          const raw = localStorage.getItem('ai-compass-search-history')
           this.history = raw ? JSON.parse(raw) : []
-        } catch {}
+        } catch {
+          console.error('Failed to load search history')
+        }
       }
     },
     /**
@@ -51,11 +53,10 @@ export const useSearchStore = defineStore("search", {
     save() {
       if (import.meta.client) {
         try {
-          localStorage.setItem(
-            "ai-compass-search-history",
-            JSON.stringify(this.history)
-          )
-        } catch {}
+          localStorage.setItem('ai-compass-search-history', JSON.stringify(this.history))
+        } catch {
+          console.error('Failed to save search history')
+        }
       }
     },
   },

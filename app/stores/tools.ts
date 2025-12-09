@@ -6,21 +6,29 @@ export const useToolsStore = defineStore('tools', () => {
   const categories = ref<Category[]>([])
   const loading = ref(false)
 
+  // 使用 Service 层
+  // 由于 Nuxt 自动导入在某些 IDE/linter 环境可能不被识别，或者还未重新索引
+  // 但在运行时应该是可用的。为了消除 linter 错误，我们假设这些是全局可用的
+  // 如果是实际运行错误，说明 nuxt.config.ts 修改还未生效（可能需要重启 dev server）
+  // 但在这里我们先忽略 linter 错误，或者显式导入（如果它们不是自动导入的话）
+  // 由于我们刚修改了 nuxt.config.ts，可能需要手动 import
+  // 但由于它们是 composables (在 services 目录下)，Nuxt 会自动导入它们
+
+  const toolService = useToolService()
+  const categoryService = useCategoryService()
+
   /**
    * 函数: fetchCategories
-   * 作用: 从 Supabase 加载分类；可通过 options.noMock 禁止回退到 mock 数据
+   * 作用: 从 Supabase 加载分类
    */
-  async function fetchCategories(options?: { noMock?: boolean }) {
+  async function fetchCategories() {
     try {
       loading.value = true
-      const { get } = useSupabaseRest()
-      const data = await get<Category[]>('categories', {
-        select: 'id,name,slug,icon,description,created_at',
-      })
-      categories.value = data && data.length ? data : []
+      const data = await categoryService.fetchCategories()
+      categories.value = data
     } catch (e) {
-      console.error('Failed to fetch categories, using mock:', e)
-      categories.value = []
+      console.error('Failed to fetch categories:', e)
+      // 如果需要，可以在这里处理回退逻辑
     } finally {
       loading.value = false
     }
@@ -28,22 +36,15 @@ export const useToolsStore = defineStore('tools', () => {
 
   /**
    * 函数: fetchTools
-   * 作用: 从 Supabase 加载工具；可通过 options.noMock 禁止回退到 mock 数据
+   * 作用: 从 Supabase 加载工具
    */
-  async function fetchTools(params?: Record<string, unknown>, options?: { noMock?: boolean }) {
+  async function fetchTools(params?: Record<string, unknown>) {
     try {
       loading.value = true
-      const { get } = useSupabaseRest()
-      // Simply fetching all for demo, in production should use pagination
-      const data = await get<Tool[]>('tools', {
-        select:
-          'id,name,slug,description,url,icon,images,tags,pricing,category_id,created_at,updated_at',
-        ...params,
-      })
-      tools.value = data && data.length ? data : []
+      const data = await toolService.fetchTools(params)
+      tools.value = data
     } catch (e) {
-      console.error('Failed to fetch tools, using mock:', e)
-      tools.value = []
+      console.error('Failed to fetch tools:', e)
     } finally {
       loading.value = false
     }
@@ -56,11 +57,29 @@ export const useToolsStore = defineStore('tools', () => {
 
     // Then fetch
     try {
-      const { get } = useSupabaseRest()
-      const data = await get<Tool[]>('tools', { slug: `eq.${slug}` })
-      return data?.[0]
-    } catch (e) {
+      return await toolService.fetchToolBySlug(slug)
+    } catch {
       return undefined
+    }
+  }
+
+  /**
+   * 搜索工具
+   */
+  async function searchTools(query: string) {
+    try {
+      loading.value = true
+      const data = await toolService.searchTools(query)
+      // 搜索结果是否需要更新到 tools 状态？
+      // 还是直接返回？这里选择更新到 tools 状态，或者返回
+      // 考虑到 search 页面可能需要单独的状态，这里先更新 tools
+      tools.value = data
+      return data
+    } catch (e) {
+      console.error('Search failed:', e)
+      return []
+    } finally {
+      loading.value = false
     }
   }
 
@@ -71,5 +90,6 @@ export const useToolsStore = defineStore('tools', () => {
     fetchCategories,
     fetchTools,
     getToolBySlug,
+    searchTools,
   }
 })

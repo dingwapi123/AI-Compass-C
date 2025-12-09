@@ -18,13 +18,21 @@ export default defineNuxtConfig({
   supabase: {
     url: process.env.NUXT_PUBLIC_SUPABASE_URL,
     key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
+    // 明确禁用重定向
     redirect: false,
+    // 即使 redirect 为 true，这些选项也可以帮助控制行为，但我们主要依赖 redirect: false
+    redirectOptions: {
+      login: '/login',
+      callback: '/confirm',
+      exclude: ['/*'], // 排除所有路由
+    },
   },
 
   // 自动导入配置
   imports: {
     dirs: [
       'composables/**', // 递归扫描 composables 目录
+      'services/**', // 递归扫描 services 目录
     ],
   },
   image: {
