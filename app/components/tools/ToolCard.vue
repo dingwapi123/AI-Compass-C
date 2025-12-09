@@ -1,7 +1,7 @@
 <template>
   <NuxtLink :to="`/tools/${tool.slug}`" class="block h-full">
     <UCard
-      class="h-full transition-all hover:ring-2 hover:ring-primary-500 hover:shadow-lg flex flex-col group"
+      class="hover:ring-primary-500 group flex h-full flex-col transition-all hover:shadow-lg hover:ring-2"
     >
       <template #header>
         <div class="flex items-start justify-between">
@@ -10,15 +10,15 @@
               :src="tool.icon || (tool.images && tool.images[0]) || ''"
               :alt="tool.name"
               size="md"
-              class="bg-gray-50 dark:bg-gray-800 rounded-xl"
+              class="rounded-xl bg-gray-50 dark:bg-gray-800"
             />
             <div>
               <h3
-                class="font-bold text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors"
+                class="group-hover:text-primary-600 font-bold text-gray-900 transition-colors dark:text-white"
               >
                 {{ tool.name }}
               </h3>
-              <div class="flex gap-2 mt-1">
+              <div class="mt-1 flex gap-2">
                 <UBadge
                   v-if="tool.pricing"
                   :color="pricingColor"
@@ -34,23 +34,20 @@
         </div>
       </template>
 
-      <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 flex-1">
+      <p class="line-clamp-3 flex-1 text-sm text-gray-500 dark:text-gray-400">
         {{ tool.description }}
       </p>
 
       <template #footer>
-      <div class="flex items-center justify-end pt-2">
-        <UButton 
-          :to="`/tools/${tool.slug}`" 
-          variant="ghost" 
-          color="neutral" 
-          size="sm"
-          trailing-icon="i-heroicons-arrow-right"
-        >
-          Details
-        </UButton>
-      </div>
-    </template>
+        <div class="flex items-center justify-end pt-2">
+          <span
+            class="group-hover:text-primary-500 flex items-center gap-1 text-sm font-medium text-gray-500 transition-colors dark:text-gray-400"
+          >
+            Details
+            <UIcon name="i-heroicons-arrow-right" class="h-4 w-4" />
+          </span>
+        </div>
+      </template>
     </UCard>
   </NuxtLink>
 </template>
@@ -63,7 +60,7 @@ const props = defineProps<{
 }>()
 
 const pricingColor = computed(() => {
-  switch (props.tool.pricing_model) {
+  switch (props.tool.pricing) {
     case 'free':
       return 'success'
     case 'paid':

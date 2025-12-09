@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-50 dark:bg-gray-950 pb-24">
+  <div class="bg-gray-50 pb-24 dark:bg-gray-950">
     <UContainer class="py-8">
       <!-- 1. Breadcrumb Section -->
       <UBreadcrumb :items="breadcrumbItems" class="mb-8" />
@@ -7,30 +7,30 @@
       <div v-if="tool" class="space-y-8">
         <!-- 2. Hero Card Section -->
         <div
-          class="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm"
+          class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
         >
-          <div class="flex flex-col md:flex-row gap-8">
+          <div class="flex flex-col gap-8 md:flex-row">
             <!-- Logo -->
             <div class="flex-shrink-0">
               <UAvatar
                 :src="
-                  tool.image_url ||
+                  (tool.images && tool.images[0]) ||
                   `https://ui-avatars.com/api/?name=${tool.name}&background=random`
                 "
                 :alt="tool.name"
                 size="3xl"
-                class="w-32 h-32 rounded-2xl ring-1 ring-gray-200 dark:ring-gray-800 bg-gray-50 dark:bg-gray-800"
+                class="h-32 w-32 rounded-2xl bg-gray-50 ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-800"
               />
             </div>
 
             <!-- Main Info -->
-            <div class="flex-1 min-w-0 flex flex-col justify-between">
-              <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+            <div class="flex min-w-0 flex-1 flex-col justify-between">
+              <div class="flex flex-col items-start justify-between gap-6 md:flex-row">
                 <div>
-                  <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+                  <h1 class="mb-3 text-3xl font-bold text-gray-900 md:text-4xl dark:text-white">
                     {{ tool.name }}
                   </h1>
-                  <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2">
+                  <p class="line-clamp-2 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
                     {{
                       tool.description
                         ? tool.description.slice(0, 150) +
@@ -47,7 +47,7 @@
                     color="neutral"
                     size="xl"
                     icon="i-heroicons-arrow-top-right-on-square"
-                    class="rounded-xl px-6 py-3 font-semibold shadow-sm hover:shadow-md transition-all"
+                    class="rounded-xl px-6 py-3 font-semibold shadow-sm transition-all hover:shadow-md"
                   >
                     Visit Website
                   </UButton>
@@ -56,7 +56,7 @@
 
               <!-- Metadata / Tags -->
               <div
-                class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-wrap gap-3 items-center"
+                class="mt-8 flex flex-wrap items-center gap-3 border-t border-gray-100 pt-8 dark:border-gray-800"
               >
                 <!-- Pricing Badge -->
                 <UBadge
@@ -65,7 +65,7 @@
                   size="md"
                   class="rounded-lg px-3 py-1.5 capitalize"
                 >
-                  {{ tool.pricing_model }}
+                  {{ tool.pricing }}
                 </UBadge>
 
                 <!-- Category Badge -->
@@ -96,16 +96,16 @@
         </div>
 
         <!-- 3. Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
           <!-- Left Column: Description & Gallery -->
-          <div class="lg:col-span-2 space-y-8">
+          <div class="space-y-8 lg:col-span-2">
             <!-- Description Card -->
             <section
-              class="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm"
+              class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Description</h2>
+              <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Description</h2>
               <div
-                class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"
+                class="prose dark:prose-invert max-w-none leading-relaxed whitespace-pre-line text-gray-600 dark:text-gray-300"
               >
                 {{ tool.description }}
               </div>
@@ -113,28 +113,28 @@
 
             <!-- Gallery Card -->
             <section
-              class="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm"
+              class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Gallery</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Gallery</h2>
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Placeholder 1 -->
                 <div
-                  class="aspect-video bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center group cursor-pointer overflow-hidden"
+                  class="group flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
                 >
                   <div
-                    class="text-gray-400 group-hover:scale-110 transition-transform duration-300"
+                    class="text-gray-400 transition-transform duration-300 group-hover:scale-110"
                   >
-                    <UIcon name="i-heroicons-photo" class="w-12 h-12 mx-auto mb-2" />
+                    <UIcon name="i-heroicons-photo" class="mx-auto mb-2 h-12 w-12" />
                   </div>
                 </div>
                 <!-- Placeholder 2 -->
                 <div
-                  class="aspect-video bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center group cursor-pointer overflow-hidden"
+                  class="group flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
                 >
                   <div
-                    class="text-gray-400 group-hover:scale-110 transition-transform duration-300"
+                    class="text-gray-400 transition-transform duration-300 group-hover:scale-110"
                   >
-                    <UIcon name="i-heroicons-photo" class="w-12 h-12 mx-auto mb-2" />
+                    <UIcon name="i-heroicons-photo" class="mx-auto mb-2 h-12 w-12" />
                   </div>
                 </div>
               </div>
@@ -144,52 +144,52 @@
           <!-- Right Column: Similar Tools -->
           <div class="space-y-8">
             <div
-              class="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm"
+              class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Similar Tools</h3>
+              <h3 class="mb-6 text-xl font-bold text-gray-900 dark:text-white">Similar Tools</h3>
 
               <div v-if="relatedTools.length > 0" class="space-y-6">
                 <NuxtLink
                   v-for="related in relatedTools"
                   :key="related.id"
                   :to="`/tools/${related.slug}`"
-                  class="flex items-start gap-4 group"
+                  class="group flex items-start gap-4"
                 >
                   <UAvatar
                     :src="
-                      related.image_url ||
+                      (related.images && related.images[0]) ||
                       `https://ui-avatars.com/api/?name=${related.name}&background=random`
                     "
                     size="lg"
-                    class="rounded-xl bg-gray-50 ring-1 ring-gray-100 dark:ring-gray-800 flex-shrink-0"
+                    class="flex-shrink-0 rounded-xl bg-gray-50 ring-1 ring-gray-100 dark:ring-gray-800"
                   />
                   <div class="min-w-0 pt-1">
                     <div
-                      class="font-bold text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors truncate text-base mb-1"
+                      class="group-hover:text-primary-600 mb-1 truncate text-base font-bold text-gray-900 transition-colors dark:text-white"
                     >
                       {{ related.name }}
                     </div>
-                    <div class="text-sm text-gray-500 line-clamp-2 leading-snug">
+                    <div class="line-clamp-2 text-sm leading-snug text-gray-500">
                       {{ related.description }}
                     </div>
                   </div>
                 </NuxtLink>
               </div>
-              <div v-else class="text-gray-500 text-center py-8">No similar tools found.</div>
+              <div v-else class="py-8 text-center text-gray-500">No similar tools found.</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Loading State -->
-      <div v-else-if="!loading" class="text-center py-20">
+      <div v-else-if="!loading" class="py-20 text-center">
         <div
-          class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4"
+          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
         >
-          <UIcon name="i-heroicons-magnifying-glass" class="w-8 h-8 text-gray-400" />
+          <UIcon name="i-heroicons-magnifying-glass" class="h-8 w-8 text-gray-400" />
         </div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tool Not Found</h1>
-        <p class="text-gray-500 mb-6">
+        <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Tool Not Found</h1>
+        <p class="mb-6 text-gray-500">
           The tool you are looking for does not exist or has been removed.
         </p>
         <UButton to="/" color="neutral" variant="solid">Return Home</UButton>
@@ -268,7 +268,7 @@ const relatedTools = computed(() => {
  */
 const pricingColor = computed(() => {
   if (!tool.value) return 'neutral'
-  switch (tool.value.pricing_model) {
+  switch (tool.value.pricing) {
     case 'free':
       return 'primary' // Changed to primary for better visibility
     case 'paid':

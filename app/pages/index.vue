@@ -168,22 +168,41 @@ const { data: allCategories } = await useAsyncData<Category[]>(
 )
 
 // 3. Filtered Tools Logic
-const selectedCategory = ref('')
-const filteredTools = ref<Tool[]>([])
+// 计算初始分类 ID，避免副作用赋值
+const initialCategoryId = computed(() => {
+  if (allCategories.value && allCategories.value.length > 0) {
+    const first = allCategories.value[0]
+    return first ? first.id : ''
+  }
+  return ''
+})
+
+const selectedCategory = ref(initialCategoryId.value)
+
+// 使用 useAsyncData 获取过滤后的工具列表，并监听 selectedCategory 变化
+const { data: filteredTools } = await useAsyncData<Tool[]>(
+  'home-filtered-tools',
+  async () => {
+    // 优先使用当前选中的分类，如果为空则尝试使用初始分类
+    const categoryId = selectedCategory.value || initialCategoryId.value
+    if (!categoryId) return []
+
+    // 如果 selectedCategory 为空但计算出了初始值，同步更新它
+    if (!selectedCategory.value && categoryId) {
+      selectedCategory.value = categoryId
+    }
+
+    return await fetchToolsByCategory(categoryId, 4)
+  },
+  {
+    watch: [selectedCategory], // 当 selectedCategory 变化时自动重新获取
+    default: () => [],
+  }
+)
 
 // 切换分类的处理函数
-const handleCategoryChange = async (categoryId: string) => {
+const handleCategoryChange = (categoryId: string) => {
   selectedCategory.value = categoryId
-  // 获取该分类下的 4 条数据
-  filteredTools.value = await fetchToolsByCategory(categoryId, 4)
-}
-
-// 初始化：如果存在分类，默认选中第一个并加载数据
-if (allCategories.value && allCategories.value.length > 0) {
-  const firstCategory = allCategories.value[0]
-  if (firstCategory) {
-    await handleCategoryChange(firstCategory.id)
-  }
 }
 
 // Mock News Data
