@@ -11,22 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
     '@vueuse/nuxt',
-    '@nuxtjs/supabase',
   ],
-
-  // Supabase Configuration
-  supabase: {
-    url: process.env.NUXT_PUBLIC_SUPABASE_URL,
-    key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
-    // 明确禁用重定向
-    redirect: false,
-    // 即使 redirect 为 true，这些选项也可以帮助控制行为，但我们主要依赖 redirect: false
-    redirectOptions: {
-      login: '/login',
-      callback: '/confirm',
-      exclude: ['/*'], // 排除所有路由
-    },
-  },
 
   // 自动导入配置
   imports: {
@@ -76,7 +61,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
-      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      supabasePublishableKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '', // 兼容官方写法
+      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '', // 保留旧的 key 命名以防万一
     },
     supabaseServiceRoleKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY || '',
   },

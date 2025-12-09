@@ -14,7 +14,6 @@
     "@nuxt/eslint": "1.11.0",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "4.2.0",
-    "@nuxtjs/supabase": "^2.0.3",
     "@pinia/nuxt": "^0.5.5",
     "@supabase/supabase-js": "^2.86.2",
     "@vueuse/core": "^14.1.0",
