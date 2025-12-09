@@ -233,7 +233,7 @@ const selectedCategoryIds = ref<string[]>([]) // Store Category IDs
 const selectedPricing = ref<string[]>([])
 
 const page = ref(1)
-const itemsPerPage = 12
+const itemsPerPage = 6
 
 // --- Computed ---
 const filteredTools = computed(() => {
