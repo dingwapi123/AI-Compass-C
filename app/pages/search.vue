@@ -227,7 +227,8 @@ const accordionItems = [
 ]
 
 // --- State ---
-const searchQuery = ref('')
+const route = useRoute()
+const searchQuery = ref((route.query.q as string) || '')
 const selectedCategoryIds = ref<string[]>([]) // Store Category IDs
 const selectedPricing = ref<string[]>([])
 

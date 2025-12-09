@@ -13,22 +13,30 @@
         </p>
 
         <div class="mx-auto mt-8">
-          <UInput
-            placeholder="搜索AI工具..."
-            size="xl"
-            icon="i-heroicons-magnifying-glass"
-            :ui="{ trailing: 'pointer-events-auto' }"
-            class="w-full max-w-2xl"
-          >
-            <template #trailing>
-              <UButton
-                color="neutral"
-                variant="ghost"
-                icon="i-heroicons-arrow-right"
-                @click="navigateTo('/search')"
-              />
+          <ClientOnly>
+            <UInput
+              v-model="searchQuery"
+              placeholder="搜索AI工具..."
+              size="xl"
+              icon="i-heroicons-magnifying-glass"
+              :ui="{ trailing: 'pointer-events-auto' }"
+              class="w-full max-w-2xl"
+              autocomplete="off"
+              @keyup.enter="handleSearch"
+            >
+              <template #trailing>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-heroicons-arrow-right"
+                  @click="handleSearch"
+                />
+              </template>
+            </UInput>
+            <template #fallback>
+              <USkeleton class="h-11 w-full max-w-2xl rounded-md" />
             </template>
-          </UInput>
+          </ClientOnly>
         </div>
       </UContainer>
     </section>
@@ -203,6 +211,20 @@ const { data: filteredTools } = await useAsyncData<Tool[]>(
 // 切换分类的处理函数
 const handleCategoryChange = (categoryId: string) => {
   selectedCategory.value = categoryId
+}
+
+// 4. Search Logic
+const searchQuery = ref('')
+
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    navigateTo({
+      path: '/search',
+      query: { q: searchQuery.value.trim() },
+    })
+  } else {
+    navigateTo('/search')
+  }
 }
 
 // Mock News Data
