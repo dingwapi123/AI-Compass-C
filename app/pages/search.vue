@@ -12,7 +12,7 @@
             >
               <div class="mb-4 flex items-center justify-between">
                 <h1 class="text-base font-bold">筛选条件</h1>
-                <UButton variant="ghost" color="neutral" size="xs" @click="resetFilters">
+                <UButton variant="ghost" color="neutral" size="sm" @click="resetFilters">
                   重置
                 </UButton>
               </div>
@@ -156,7 +156,7 @@
                     v-if="tool.pricing"
                     :color="getTagColor(tool.pricing)"
                     variant="subtle"
-                    size="xs"
+                    size="sm"
                     class="rounded-full"
                   >
                     {{ tool.pricing }}
@@ -166,7 +166,7 @@
                     :key="tag"
                     color="neutral"
                     variant="subtle"
-                    size="xs"
+                    size="sm"
                     class="rounded-full"
                   >
                     {{ tag }}
