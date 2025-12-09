@@ -162,6 +162,8 @@
           <div class="mt-auto flex justify-center pt-12">
             <UPagination
               v-model:page="page"
+              show-edges
+              :sibling-count="1"
               active-color="neutral"
               active-variant="solid"
               :items-per-page="itemsPerPage"
