@@ -7,13 +7,6 @@ export const useToolsStore = defineStore('tools', () => {
   const loading = ref(false)
 
   // 使用 Service 层
-  // 由于 Nuxt 自动导入在某些 IDE/linter 环境可能不被识别，或者还未重新索引
-  // 但在运行时应该是可用的。为了消除 linter 错误，我们假设这些是全局可用的
-  // 如果是实际运行错误，说明 nuxt.config.ts 修改还未生效（可能需要重启 dev server）
-  // 但在这里我们先忽略 linter 错误，或者显式导入（如果它们不是自动导入的话）
-  // 由于我们刚修改了 nuxt.config.ts，可能需要手动 import
-  // 但由于它们是 composables (在 services 目录下)，Nuxt 会自动导入它们
-
   const toolService = useToolService()
   const categoryService = useCategoryService()
 
@@ -28,7 +21,6 @@ export const useToolsStore = defineStore('tools', () => {
       categories.value = data
     } catch (e) {
       console.error('Failed to fetch categories:', e)
-      // 如果需要，可以在这里处理回退逻辑
     } finally {
       loading.value = false
     }
@@ -43,8 +35,10 @@ export const useToolsStore = defineStore('tools', () => {
       loading.value = true
       const data = await toolService.fetchTools(params)
       tools.value = data
+      return data
     } catch (e) {
       console.error('Failed to fetch tools:', e)
+      return []
     } finally {
       loading.value = false
     }
@@ -70,10 +64,6 @@ export const useToolsStore = defineStore('tools', () => {
     try {
       loading.value = true
       const data = await toolService.searchTools(query)
-      // 搜索结果是否需要更新到 tools 状态？
-      // 还是直接返回？这里选择更新到 tools 状态，或者返回
-      // 考虑到 search 页面可能需要单独的状态，这里先更新 tools
-      tools.value = data
       return data
     } catch (e) {
       console.error('Search failed:', e)

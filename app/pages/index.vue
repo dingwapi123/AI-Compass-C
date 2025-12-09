@@ -155,33 +155,39 @@ import { storeToRefs } from 'pinia'
 const toolsStore = useToolsStore()
 const { tools, categories } = storeToRefs(toolsStore)
 
-// Initialize data (使用 useAsyncData 确保服务端/客户端数据同步，避免水合错误)
+// 初始化数据：获取分类 + 获取工具
 await useAsyncData('home-data', async () => {
-  await Promise.all([toolsStore.fetchCategories(), toolsStore.fetchTools()])
+  await Promise.all([
+    toolsStore.fetchCategories(),
+    // 默认请求前 4 条数据
+    toolsStore.fetchTools({ limit: 4 }),
+  ])
   return true
 })
 
-// State
+// 状态
 const selectedCategory = ref('all')
 
-// Add 'All' category to the list
+// 监听分类切换
+watch(selectedCategory, async (newId) => {
+  if (newId === 'all') {
+    await toolsStore.fetchTools({ limit: 4 })
+  } else {
+    await toolsStore.fetchTools({ category_id: newId, limit: 4 })
+  }
+})
+
+// 添加“全部”选项
 const allCategories = computed(() => [
   { id: 'all', name: '全部', slug: 'all' },
   ...categories.value,
 ])
 
-// Computed
-const hotTools = computed(() => {
-  // Just taking first 4 tools as hot tools for demo
-  return tools.value.slice(0, 4)
-})
+// 热门工具：直接使用当前 tools (因为我们只请求了 4 条)
+const hotTools = computed(() => tools.value)
 
-const filteredTools = computed(() => {
-  if (selectedCategory.value === 'all') {
-    return tools.value
-  }
-  return tools.value.filter((t) => t.category_id === selectedCategory.value)
-})
+// 列表工具：同上
+const filteredTools = computed(() => tools.value)
 
 // Mock News Data
 const latestNews = [
