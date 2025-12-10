@@ -23,7 +23,7 @@
       v-if="category"
       class="flex items-center justify-between gap-2 border-b border-gray-200 pb-3 dark:border-gray-800"
     >
-      <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ categoryTools.length }} 个工具</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ totalTools }} 个工具</p>
       <div class="flex gap-1">
         <USelectMenu
           v-model="selectedPricing"
@@ -38,27 +38,45 @@
     </div>
 
     <!-- Grid -->
-    <div v-if="loading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      <USkeleton v-for="i in 8" :key="i" class="aspect-square w-full rounded-xl" />
-    </div>
-
-    <div
-      v-else-if="filteredTools.length > 0"
-      class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-    >
-      <ToolMinimalCard v-for="tool in filteredTools" :key="tool.id" :tool="tool" />
-    </div>
-
-    <div v-else-if="category" class="py-20 text-center">
+    <div class="min-h-[600px]">
       <div
-        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800"
+        v-if="loading"
+        class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
-        <UIcon name="i-heroicons-inbox" class="h-8 w-8" />
+        <USkeleton v-for="i in 8" :key="i" class="aspect-square w-full rounded-xl" />
       </div>
-      <h3 class="mb-2 text-lg font-medium text-gray-900 dark:text-white">暂无工具</h3>
-      <p class="text-gray-500 dark:text-gray-400">
-        {{ selectedPricing ? '没有符合条件的工具。' : '该分类下还没有收录任何工具。' }}
-      </p>
+
+      <div
+        v-else-if="tools.length > 0"
+        class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        <ToolMinimalCard v-for="tool in tools" :key="tool.id" :tool="tool" />
+      </div>
+
+      <div v-else-if="category" class="py-20 text-center">
+        <div
+          class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800"
+        >
+          <UIcon name="i-heroicons-inbox" class="h-8 w-8" />
+        </div>
+        <h3 class="mb-2 text-lg font-medium text-gray-900 dark:text-white">暂无工具</h3>
+        <p class="text-gray-500 dark:text-gray-400">
+          {{ selectedPricing ? '没有符合条件的工具。' : '该分类下还没有收录任何工具。' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div v-if="totalTools > 0" class="flex justify-center pt-8">
+      <UPagination
+        v-model:page="page"
+        :total="totalTools"
+        :items-per-page="pageSize"
+        show-edges
+        :sibling-count="1"
+        active-color="neutral"
+        active-variant="solid"
+      />
     </div>
   </div>
 </template>
@@ -68,15 +86,20 @@ import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const toolsStore = useToolsStore()
-const { categories, tools, loading } = storeToRefs(toolsStore)
+const { categories, tools, totalTools, loading } = storeToRefs(toolsStore)
 
-// Load data
+// Load Categories first (to get category ID)
 await toolsStore.fetchCategories()
-await toolsStore.fetchTools()
 
 const categorySlug = route.params.slug as string
 
-// Pricing Filter
+const category = computed(() => {
+  return categories.value.find((c) => c.slug === categorySlug)
+})
+
+// State
+const page = ref(1)
+const pageSize = 12
 const pricingOptions = [
   { label: '全部', value: '' },
   { label: '免费', value: 'free' },
@@ -85,21 +108,50 @@ const pricingOptions = [
 ]
 const selectedPricing = ref(pricingOptions[0])
 
-const category = computed(() => {
-  return categories.value.find((c) => c.slug === categorySlug)
-})
-
-const categoryTools = computed(() => {
-  if (!category.value) return []
-  return tools.value.filter((t) => t.category_id === category.value?.id)
-})
-
-const filteredTools = computed(() => {
-  let result = categoryTools.value
-  if (selectedPricing.value && selectedPricing.value.value) {
-    result = result.filter((t) => t.pricing === selectedPricing.value?.value)
+// Query Parameters
+const queryParams = computed(() => {
+  const params: {
+    page: number
+    pageSize: number
+    categoryIds?: string[]
+    pricing?: string[]
+  } = {
+    page: page.value,
+    pageSize: pageSize,
   }
-  return result
+
+  if (category.value) {
+    params.categoryIds = [category.value.id]
+  }
+
+  if (selectedPricing.value && selectedPricing.value.value) {
+    params.pricing = [selectedPricing.value.value]
+  }
+
+  return params
+})
+
+// Fetch Tools
+// Watch queryParams to refetch tools when page or filter changes
+const { refresh } = await useAsyncData(`category-${categorySlug}`, async () => {
+  if (category.value) {
+    await toolsStore.searchTools(queryParams.value)
+  }
+  return true
+})
+
+// 监听 queryParams 变化，强制刷新数据
+watch(
+  queryParams,
+  () => {
+    refresh()
+  },
+  { deep: true }
+)
+
+// Reset page when filter changes
+watch(selectedPricing, () => {
+  page.value = 1
 })
 
 useHead({
