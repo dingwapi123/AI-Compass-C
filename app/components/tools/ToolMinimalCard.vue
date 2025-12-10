@@ -12,14 +12,9 @@
       >
         {{ tool.name }}
       </h4>
-      <p class="text-sm font-normal text-gray-600 dark:text-gray-400 line-clamp-2">
+      <p class="text-sm font-normal text-gray-600 dark:text-gray-400 line-clamp-1">
         {{ tool.description }}
       </p>
-      <span
-        class="text-sm font-medium text-primary-600 dark:text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"
-      >
-        查看详情 <UIcon name="i-heroicons-arrow-right" class="w-4 h-4" />
-      </span>
     </div>
   </NuxtLink>
 </template>

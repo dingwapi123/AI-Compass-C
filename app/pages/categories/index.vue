@@ -37,7 +37,13 @@
         v-if="loading"
         class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
-        <USkeleton v-for="i in 8" :key="i" class="aspect-square w-full rounded-xl" />
+        <div v-for="i in pageSize" :key="i" class="flex flex-col gap-3">
+          <USkeleton class="aspect-square w-full rounded-xl" />
+          <div class="flex flex-col gap-1">
+            <USkeleton class="h-6 w-3/4" />
+            <USkeleton class="h-4 w-full" />
+          </div>
+        </div>
       </div>
 
       <div
