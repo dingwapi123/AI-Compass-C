@@ -9,26 +9,34 @@ import { useSupabaseClient } from '~/composables/useSupabase'
 export const fetchRandomTools = async (count: number = 4): Promise<Tool[]> => {
   const supabase = useSupabaseClient()
 
-  // 这里我们获取最新的 20 条数据，然后在前端进行随机打乱取前 count 条
-  // 这样可以避免复杂的 SQL 随机查询，对于小数据量场景足够高效
-  const { data, error } = await supabase
-    .from('tools')
-    .select('*')
-    .limit(20)
-    .order('created_at', { ascending: false })
+  // 1. 获取所有工具的 ID (轻量级)
+  const { data: allIds, error: idError } = await supabase.from('tools').select('id')
+
+  if (idError || !allIds) {
+    console.error('Error fetching tool IDs:', idError)
+    return []
+  }
+
+  // 2. 随机从所有 ID 中选取 count 个
+  // 使用 Fisher-Yates 洗牌算法确保完全随机
+  const ids = allIds.map((item) => item.id)
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[ids[i], ids[j]] = [ids[j], ids[i]]
+  }
+  const shuffledIds = ids.slice(0, count)
+
+  if (shuffledIds.length === 0) return []
+
+  // 3. 获取选中工具的详细信息
+  const { data, error } = await supabase.from('tools').select('*').in('id', shuffledIds)
 
   if (error) {
     console.error('Error fetching random tools:', error)
     return []
   }
 
-  if (!data) return []
-
-  // 随机打乱数组
-  const shuffled = data.sort(() => 0.5 - Math.random())
-
-  // 返回前 count 条
-  return shuffled.slice(0, count) as Tool[]
+  return data as Tool[]
 }
 
 /**
@@ -165,23 +173,34 @@ export const fetchRandomToolsByCategory = async (
 ): Promise<Tool[]> => {
   const supabase = useSupabaseClient()
 
-  // 获取最新的 20 条，然后在前端随机打乱
-  const { data, error } = await supabase
+  // 1. 获取该分类下所有工具的 ID
+  const { data: allIds, error: idError } = await supabase
     .from('tools')
-    .select('*')
+    .select('id')
     .eq('category_id', categoryId)
-    .limit(20)
-    .order('created_at', { ascending: false })
+
+  if (idError || !allIds) {
+    console.error(`Error fetching tool IDs for category ${categoryId}:`, idError)
+    return []
+  }
+
+  // 2. 随机选取 ID (Fisher-Yates Shuffle)
+  const ids = allIds.map((item) => item.id)
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[ids[i], ids[j]] = [ids[j], ids[i]]
+  }
+  const shuffledIds = ids.slice(0, count)
+
+  if (shuffledIds.length === 0) return []
+
+  // 3. 获取详情
+  const { data, error } = await supabase.from('tools').select('*').in('id', shuffledIds)
 
   if (error) {
     console.error(`Error fetching random tools for category ${categoryId}:`, error)
     return []
   }
 
-  if (!data) return []
-
-  // 随机打乱
-  const shuffled = data.sort(() => 0.5 - Math.random())
-
-  return shuffled.slice(0, count) as Tool[]
+  return data as Tool[]
 }
