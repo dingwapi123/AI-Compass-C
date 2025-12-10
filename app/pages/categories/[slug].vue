@@ -97,7 +97,7 @@ const categoryTools = computed(() => {
 const filteredTools = computed(() => {
   let result = categoryTools.value
   if (selectedPricing.value && selectedPricing.value.value) {
-    result = result.filter((t) => t.pricing === selectedPricing.value.value)
+    result = result.filter((t) => t.pricing === selectedPricing.value?.value)
   }
   return result
 })
