@@ -16,7 +16,18 @@
     <div
       class="flex items-center justify-between gap-2 border-b border-gray-200 pb-3 dark:border-gray-800"
     >
-      <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ tools.length }} 个工具</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ filteredTools.length }} 个工具</p>
+      <div class="flex gap-1">
+        <USelectMenu
+          v-model="selectedPricing"
+          :items="pricingOptions"
+          :search-input="false"
+          color="neutral"
+          variant="soft"
+          icon="i-heroicons-funnel"
+          class="w-32"
+        />
+      </div>
     </div>
 
     <!-- Grid -->
@@ -25,10 +36,10 @@
     </div>
 
     <div
-      v-else-if="tools.length > 0"
+      v-else-if="filteredTools.length > 0"
       class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
     >
-      <ToolMinimalCard v-for="tool in tools" :key="tool.id" :tool="tool" />
+      <ToolMinimalCard v-for="tool in filteredTools" :key="tool.id" :tool="tool" />
     </div>
 
     <div v-else class="py-20 text-center">
@@ -38,7 +49,9 @@
         <UIcon name="i-heroicons-inbox" class="h-8 w-8" />
       </div>
       <h3 class="mb-2 text-lg font-medium text-gray-900 dark:text-white">暂无工具</h3>
-      <p class="text-gray-500 dark:text-gray-400">还没有收录任何工具。</p>
+      <p class="text-gray-500 dark:text-gray-400">
+        {{ selectedPricing ? '没有符合条件的工具。' : '还没有收录任何工具。' }}
+      </p>
     </div>
   </div>
 </template>
@@ -48,6 +61,23 @@ import { storeToRefs } from 'pinia'
 
 const toolsStore = useToolsStore()
 const { tools, loading } = storeToRefs(toolsStore)
+
+// Pricing Filter
+const pricingOptions = [
+  { label: '全部', value: '' },
+  { label: '免费', value: 'free' },
+  { label: '免费试用', value: 'freemium' },
+  { label: '付费', value: 'paid' },
+]
+const selectedPricing = ref(pricingOptions[0])
+
+const filteredTools = computed(() => {
+  let result = tools.value
+  if (selectedPricing.value && selectedPricing.value.value) {
+    result = result.filter((t) => t.pricing === selectedPricing.value.value)
+  }
+  return result
+})
 
 // Ensure data is loaded
 await useAsyncData('categories-index', async () => {
