@@ -48,7 +48,7 @@
           <USkeleton class="aspect-square w-full rounded-xl" />
           <div class="flex flex-col gap-1">
             <USkeleton class="h-6 w-3/4" />
-            <USkeleton class="h-4 w-full" />
+            <USkeleton class="h-5 w-full" />
           </div>
         </div>
       </div>
