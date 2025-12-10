@@ -123,7 +123,10 @@ export const fetchTools = async (
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
-  query = query.order('created_at', { ascending: false }).range(from, to)
+  query = query
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: true })
+    .range(from, to)
 
   const { data, error, count } = await query
 
