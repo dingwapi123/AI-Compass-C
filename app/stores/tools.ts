@@ -1,10 +1,18 @@
 import { defineStore } from 'pinia'
 import type { Tool, Category } from '~/types'
-import { fetchCategories, fetchAllTools, fetchToolsByCategory, fetchTools } from '~/services/tools'
+import {
+  fetchCategories,
+  fetchAllTools,
+  fetchToolsByCategory,
+  fetchTools,
+  fetchToolBySlug,
+} from '~/services/tools'
 
 export const useToolsStore = defineStore('tools', () => {
   const categories = ref<Category[]>([])
   const tools = ref<Tool[]>([])
+  const currentTool = ref<Tool | null>(null)
+  const relatedTools = ref<Tool[]>([])
   const totalTools = ref(0)
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -13,8 +21,9 @@ export const useToolsStore = defineStore('tools', () => {
    * 获取并存储所有分类
    */
   const fetchCategoriesAction = async () => {
-    // 如果已经有数据，可以选择不再请求，或者强制刷新
-    // 这里简单起见，每次都请求
+    // 如果已经有数据，不再请求
+    if (categories.value.length > 0) return
+
     loading.value = true
     try {
       const data = await fetchCategories()
@@ -30,13 +39,15 @@ export const useToolsStore = defineStore('tools', () => {
   /**
    * 搜索工具（支持分页和筛选）
    */
-  const searchToolsAction = async (params: {
-    page?: number
-    pageSize?: number
-    search?: string
-    categoryIds?: string[]
-    pricing?: string[]
-  } = {}) => {
+  const searchToolsAction = async (
+    params: {
+      page?: number
+      pageSize?: number
+      search?: string
+      categoryIds?: string[]
+      pricing?: string[]
+    } = {}
+  ) => {
     loading.value = true
     try {
       const { data, count } = await fetchTools(params)
@@ -54,6 +65,8 @@ export const useToolsStore = defineStore('tools', () => {
    * 获取所有工具 (兼容旧 API)
    */
   const fetchToolsAction = async () => {
+    // 如果已经有大量数据（简单判定），可能不需要重新获取所有
+    // 但为了保证数据新鲜度，这里还是获取，或者可以加个 force 参数
     loading.value = true
     try {
       const data = await fetchAllTools()
@@ -85,9 +98,48 @@ export const useToolsStore = defineStore('tools', () => {
     }
   }
 
+  /**
+   * 获取单个工具详情
+   */
+  const fetchToolAction = async (slug: string) => {
+    loading.value = true
+    error.value = null
+    try {
+      // 1. 先尝试从现有的 tools 列表中查找
+      const existingTool = tools.value.find((t) => t.slug === slug)
+      if (existingTool) {
+        currentTool.value = existingTool
+      } else {
+        // 2. 如果没找到，则请求 API
+        const data = await fetchToolBySlug(slug)
+        currentTool.value = data
+      }
+    } catch (e) {
+      console.error(`Store: Error fetching tool ${slug}`, e)
+      error.value = (e as Error).message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
+   * 获取相关工具
+   */
+  const fetchRelatedToolsAction = async (categoryId: string, excludeToolId: string) => {
+    try {
+      // 这里我们复用 fetchToolsByCategory，但只取前 4 个
+      const data = await fetchToolsByCategory(categoryId, 4)
+      relatedTools.value = data.filter((t) => t.id !== excludeToolId).slice(0, 3)
+    } catch (e) {
+      console.error('Store: Error fetching related tools', e)
+    }
+  }
+
   return {
     categories,
     tools,
+    currentTool,
+    relatedTools,
     totalTools,
     loading,
     error,
@@ -95,5 +147,7 @@ export const useToolsStore = defineStore('tools', () => {
     fetchTools: fetchToolsAction,
     searchTools: searchToolsAction,
     fetchToolsByCategory: fetchToolsByCategoryAction,
+    fetchTool: fetchToolAction,
+    fetchRelatedTools: fetchRelatedToolsAction,
   }
 })

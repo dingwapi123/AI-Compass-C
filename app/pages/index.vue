@@ -158,22 +158,23 @@
 </template>
 
 <script setup lang="ts">
-import { fetchRandomTools, fetchCategories, fetchToolsByCategory } from '~/services/tools'
-import type { Tool, Category } from '~/types'
+import { fetchRandomTools, fetchToolsByCategory } from '~/services/tools'
+import type { Tool } from '~/types'
+import { storeToRefs } from 'pinia'
+
+const toolsStore = useToolsStore()
 
 // 1. Hot Tools: 使用 useAsyncData 在服务端预取数据
 const { data: hotTools } = await useAsyncData<Tool[]>('home-hot-tools', () => fetchRandomTools(4), {
   default: () => [],
 })
 
-// 2. Categories: 获取所有分类
-const { data: allCategories } = await useAsyncData<Category[]>(
-  'home-categories',
-  () => fetchCategories(),
-  {
-    default: () => [],
-  }
-)
+// 2. Categories: 获取所有分类 (通过 Store 获取以利用缓存)
+await useAsyncData('home-categories', async () => {
+  await toolsStore.fetchCategories()
+  return true
+})
+const { categories: allCategories } = storeToRefs(toolsStore)
 
 // 3. Filtered Tools Logic
 // 计算初始分类 ID，避免副作用赋值

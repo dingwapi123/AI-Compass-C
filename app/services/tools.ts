@@ -135,3 +135,20 @@ export const fetchAllTools = async (): Promise<Tool[]> => {
   const { data } = await fetchTools({ pageSize: 1000 })
   return data
 }
+
+/**
+ * 根据 Slug 获取单个工具详情
+ * @param slug - 工具 Slug
+ * @returns Promise<Tool | null> - 返回工具详情或 null
+ */
+export const fetchToolBySlug = async (slug: string): Promise<Tool | null> => {
+  const supabase = useSupabaseClient()
+  const { data, error } = await supabase.from('tools').select('*').eq('slug', slug).single()
+
+  if (error) {
+    console.error(`Error fetching tool with slug ${slug}:`, error)
+    return null
+  }
+
+  return data as Tool
+}

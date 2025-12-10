@@ -203,20 +203,15 @@ import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const toolsStore = useToolsStore()
-const { tools, categories, loading } = storeToRefs(toolsStore)
+const { currentTool: tool, relatedTools, categories, loading } = storeToRefs(toolsStore)
 
 // Load data
 await toolsStore.fetchCategories()
-await toolsStore.fetchTools()
+await toolsStore.fetchTool(route.params.slug as string)
 
-const toolSlug = route.params.slug as string
-
-/**
- * Current Tool Computed Property
- */
-const tool = computed(() => {
-  return tools.value.find((t) => t.slug === toolSlug)
-})
+if (tool.value) {
+  await toolsStore.fetchRelatedTools(tool.value.category_id, tool.value.id)
+}
 
 /**
  * Current Category Computed Property
@@ -234,7 +229,6 @@ const breadcrumbItems = computed(() => {
     { label: '首页', to: '/' },
     { label: '分类', to: '/categories' },
   ]
-
   if (category.value) {
     items.push({
       label: category.value.name,
@@ -252,27 +246,15 @@ const breadcrumbItems = computed(() => {
 })
 
 /**
- * Related Tools Computed Property
- * Filters tools by same category, excluding current tool
- */
-const relatedTools = computed(() => {
-  const currentTool = tool.value
-  if (!currentTool) return []
-  return tools.value
-    .filter((t) => t.category_id === currentTool.category_id && t.id !== currentTool.id)
-    .slice(0, 3)
-})
-
-/**
  * Pricing Model Badge Color
  */
 const pricingColor = computed(() => {
   if (!tool.value) return 'neutral'
   switch (tool.value.pricing) {
     case 'free':
-      return 'primary' // Changed to primary for better visibility
+      return 'success'
     case 'paid':
-      return 'error'
+      return 'info'
     case 'freemium':
       return 'warning'
     default:
