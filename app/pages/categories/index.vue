@@ -74,7 +74,7 @@ const selectedPricing = ref(pricingOptions[0])
 const filteredTools = computed(() => {
   let result = tools.value
   if (selectedPricing.value && selectedPricing.value.value) {
-    result = result.filter((t) => t.pricing === selectedPricing.value.value)
+    result = result.filter((t) => t.pricing === selectedPricing.value?.value)
   }
   return result
 })
