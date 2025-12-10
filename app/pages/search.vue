@@ -89,103 +89,105 @@
           </div>
 
           <!-- Tool Grid -->
-          <div v-if="loading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            <div
-              v-for="i in 6"
-              :key="i"
-              class="flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-800/50"
-            >
-              <div class="p-5">
-                <div class="mb-3 flex items-start gap-4">
-                  <!-- Icon Skeleton -->
-                  <USkeleton class="h-12 w-12 rounded-lg" :ui="{ rounded: 'rounded-lg' }" />
-                  <div class="flex-1 space-y-2">
-                    <!-- Title Skeleton -->
-                    <USkeleton class="h-5 w-3/4" />
-                    <!-- Description Skeleton -->
-                    <USkeleton class="h-4 w-full" />
-                    <USkeleton class="h-4 w-2/3" />
+          <div class="sm:min-h-[800px] xl:min-h-[450px]">
+            <div v-if="loading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div
+                v-for="i in 6"
+                :key="i"
+                class="flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-800/50"
+              >
+                <div class="p-5">
+                  <div class="mb-3 flex items-start gap-4">
+                    <!-- Icon Skeleton -->
+                    <USkeleton class="h-12 w-12 rounded-lg" :ui="{ rounded: 'rounded-lg' }" />
+                    <div class="flex-1 space-y-2">
+                      <!-- Title Skeleton -->
+                      <USkeleton class="h-5 w-3/4" />
+                      <!-- Description Skeleton -->
+                      <USkeleton class="h-4 w-full" />
+                      <USkeleton class="h-4 w-2/3" />
+                    </div>
+                  </div>
+                  <!-- Tags Skeleton -->
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    <USkeleton class="h-5 w-16 rounded-full" />
+                    <USkeleton class="h-5 w-12 rounded-full" />
+                    <USkeleton class="h-5 w-20 rounded-full" />
                   </div>
                 </div>
-                <!-- Tags Skeleton -->
-                <div class="mt-4 flex flex-wrap gap-2">
-                  <USkeleton class="h-5 w-16 rounded-full" />
-                  <USkeleton class="h-5 w-12 rounded-full" />
-                  <USkeleton class="h-5 w-20 rounded-full" />
-                </div>
-              </div>
-              <!-- Footer Skeleton -->
-              <div
-                class="border-t border-gray-200 bg-gray-50 px-5 py-3 dark:border-gray-700/50 dark:bg-gray-800/30"
-              >
-                <div class="flex items-center justify-center">
-                  <USkeleton class="h-5 w-24" />
+                <!-- Footer Skeleton -->
+                <div
+                  class="border-t border-gray-200 bg-gray-50 px-5 py-3 dark:border-gray-700/50 dark:bg-gray-800/30"
+                >
+                  <div class="flex items-center justify-center">
+                    <USkeleton class="h-5 w-24" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            <div
-              v-for="tool in tools"
-              :key="tool.id"
-              class="group flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-800/50"
-            >
-              <div class="p-5">
-                <div class="mb-3 flex items-start gap-4">
-                  <img
-                    v-if="tool.icon"
-                    class="h-12 w-12 rounded-lg bg-gray-100 object-cover dark:bg-gray-800"
-                    :src="tool.icon"
-                    :alt="tool.name"
-                  />
-                  <div
-                    v-else
-                    class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-2xl font-bold text-gray-400 dark:bg-gray-800"
-                  >
-                    {{ tool.name.charAt(0) }}
-                  </div>
-                  <div>
-                    <h3 class="text-base font-bold">{{ tool.name }}</h3>
-                    <p class="mt-1 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
-                      {{ tool.description }}
-                    </p>
-                  </div>
-                </div>
-                <div class="mt-4 flex flex-wrap gap-2">
-                  <UBadge
-                    v-if="tool.pricing"
-                    :color="getTagColor(tool.pricing)"
-                    variant="subtle"
-                    size="sm"
-                    class="rounded-full"
-                  >
-                    {{ tool.pricing }}
-                  </UBadge>
-                  <UBadge
-                    v-for="tag in tool.tags"
-                    :key="tag"
-                    color="neutral"
-                    variant="subtle"
-                    size="sm"
-                    class="rounded-full"
-                  >
-                    {{ tag }}
-                  </UBadge>
-                </div>
-              </div>
+            <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
               <div
-                class="border-t border-gray-200 bg-gray-50 px-5 py-3 dark:border-gray-700/50 dark:bg-gray-800/30"
+                v-for="tool in tools"
+                :key="tool.id"
+                class="group flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-800/50"
               >
-                <NuxtLink
-                  :to="`/tools/${tool.slug}`"
-                  class="group-hover:text-primary-600 dark:group-hover:text-primary-400 flex items-center justify-center text-sm font-semibold text-gray-900 transition-colors dark:text-white"
+                <div class="p-5">
+                  <div class="mb-3 flex items-start gap-4">
+                    <img
+                      v-if="tool.icon"
+                      class="h-12 w-12 rounded-lg bg-gray-100 object-cover dark:bg-gray-800"
+                      :src="tool.icon"
+                      :alt="tool.name"
+                    />
+                    <div
+                      v-else
+                      class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-2xl font-bold text-gray-400 dark:bg-gray-800"
+                    >
+                      {{ tool.name.charAt(0) }}
+                    </div>
+                    <div>
+                      <h3 class="text-base font-bold">{{ tool.name }}</h3>
+                      <p class="mt-1 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+                        {{ tool.description }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    <UBadge
+                      v-if="tool.pricing"
+                      :color="getTagColor(tool.pricing)"
+                      variant="subtle"
+                      size="sm"
+                      class="rounded-full"
+                    >
+                      {{ tool.pricing }}
+                    </UBadge>
+                    <UBadge
+                      v-for="tag in tool.tags"
+                      :key="tag"
+                      color="neutral"
+                      variant="subtle"
+                      size="sm"
+                      class="rounded-full"
+                    >
+                      {{ tag }}
+                    </UBadge>
+                  </div>
+                </div>
+                <div
+                  class="border-t border-gray-200 bg-gray-50 px-5 py-3 dark:border-gray-700/50 dark:bg-gray-800/30"
                 >
-                  查看详情
-                  <UIcon
-                    name="i-heroicons-arrow-right"
-                    class="ml-1 transition-transform group-hover:translate-x-1"
-                  />
-                </NuxtLink>
+                  <NuxtLink
+                    :to="`/tools/${tool.slug}`"
+                    class="group-hover:text-primary-600 dark:group-hover:text-primary-400 flex items-center justify-center text-sm font-semibold text-gray-900 transition-colors dark:text-white"
+                  >
+                    查看详情
+                    <UIcon
+                      name="i-heroicons-arrow-right"
+                      class="ml-1 transition-transform group-hover:translate-x-1"
+                    />
+                  </NuxtLink>
+                </div>
               </div>
             </div>
           </div>
