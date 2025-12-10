@@ -26,13 +26,14 @@
       <p class="text-sm text-gray-600 dark:text-gray-400">找到 {{ totalTools }} 个工具</p>
       <div class="flex gap-1">
         <USelectMenu
-          v-model="selectedPricing"
+          :model-value="selectedPricing"
           :items="pricingOptions"
           :search-input="false"
           color="neutral"
           variant="soft"
           icon="i-heroicons-funnel"
           class="w-32"
+          @update:model-value="handlePricingChange"
         />
       </div>
     </div>
@@ -149,10 +150,11 @@ watch(
   { deep: true }
 )
 
-// Reset page when filter changes
-watch(selectedPricing, () => {
+// Handle filter change
+const handlePricingChange = (newPricing: (typeof pricingOptions)[0]) => {
+  selectedPricing.value = newPricing
   page.value = 1
-})
+}
 
 useHead({
   title: computed(() =>
