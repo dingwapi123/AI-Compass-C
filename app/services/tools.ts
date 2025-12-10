@@ -152,3 +152,36 @@ export const fetchToolBySlug = async (slug: string): Promise<Tool | null> => {
 
   return data as Tool
 }
+
+/**
+ * 根据分类 ID 随机获取工具列表
+ * @param categoryId - 分类 ID
+ * @param count - 需要获取的工具数量，默认为 3
+ * @returns Promise<Tool[]> - 返回该分类下的随机工具列表
+ */
+export const fetchRandomToolsByCategory = async (
+  categoryId: string,
+  count: number = 3
+): Promise<Tool[]> => {
+  const supabase = useSupabaseClient()
+
+  // 获取最新的 20 条，然后在前端随机打乱
+  const { data, error } = await supabase
+    .from('tools')
+    .select('*')
+    .eq('category_id', categoryId)
+    .limit(20)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error(`Error fetching random tools for category ${categoryId}:`, error)
+    return []
+  }
+
+  if (!data) return []
+
+  // 随机打乱
+  const shuffled = data.sort(() => 0.5 - Math.random())
+
+  return shuffled.slice(0, count) as Tool[]
+}

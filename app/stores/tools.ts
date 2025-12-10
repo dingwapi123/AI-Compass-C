@@ -6,6 +6,7 @@ import {
   fetchToolsByCategory,
   fetchTools,
   fetchToolBySlug,
+  fetchRandomToolsByCategory,
 } from '~/services/tools'
 
 export const useToolsStore = defineStore('tools', () => {
@@ -123,12 +124,13 @@ export const useToolsStore = defineStore('tools', () => {
   }
 
   /**
-   * 获取相关工具
+   * 获取相关工具（随机）
    */
   const fetchRelatedToolsAction = async (categoryId: string, excludeToolId: string) => {
     try {
-      // 这里我们复用 fetchToolsByCategory，但只取前 4 个
-      const data = await fetchToolsByCategory(categoryId, 4)
+      // 获取该分类下随机的 4 个工具
+      // 我们请求 4 个是为了应对排除当前工具后可能少一个的情况
+      const data = await fetchRandomToolsByCategory(categoryId, 4)
       relatedTools.value = data.filter((t) => t.id !== excludeToolId).slice(0, 3)
     } catch (e) {
       console.error('Store: Error fetching related tools', e)
