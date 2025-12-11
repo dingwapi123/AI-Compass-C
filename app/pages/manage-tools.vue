@@ -143,9 +143,25 @@
                         @click="removeImage(index)"
                       />
                     </div>
+                    <div v-for="(file, index) in imageFiles" :key="`new-${index}`" class="flex items-center gap-3">
+                      <div class="h-10 w-16 flex-shrink-0 overflow-hidden rounded bg-gray-200 dark:bg-gray-800 ring-2 ring-primary-500/20">
+                        <img :src="getObjectUrl(file)" class="h-full w-full object-cover" >
+                      </div>
+                      <div class="flex-1 text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {{ file.name }} <span class="text-xs text-primary-500">(待上传)</span>
+                      </div>
+                      <UButton
+                        icon="i-heroicons-trash"
+                        color="error"
+                        variant="ghost"
+                        size="sm"
+                        @click="removeNewImage(index)"
+                      />
+                    </div>
                     
                     <div class="flex items-center gap-2">
                       <UInput
+                        ref="imageInputRef"
                         type="file"
                         accept="image/*"
                         multiple
@@ -217,6 +233,10 @@ const pricingOptions = ['free', 'paid', 'freemium']
 const logoFile = ref<File | null>(null)
 const imageFiles = ref<File[]>([])
 const logoPreview = computed(() => (logoFile.value ? URL.createObjectURL(logoFile.value) : (editingTool.icon || '')))
+const imageInputRef = ref<any>(null)
+
+// Helpers
+const getObjectUrl = (file: File) => URL.createObjectURL(file)
 
 /**
  * 选择 Logo 文件（仅缓存，不立即上传）
@@ -237,6 +257,12 @@ const handleImageSelect = (event: Event) => {
   for (let i = 0; i < files.length; i++) {
     imageFiles.value.push(files.item(i) as File)
   }
+  // 清空 input，允许重复选择同一文件
+  input.value = ''
+}
+
+const removeNewImage = (index: number) => {
+  imageFiles.value.splice(index, 1)
 }
 
 // Helpers
@@ -298,9 +324,6 @@ const handleUpdateTool = async () => {
       editingTool.images = updates.images
       imageFiles.value = []
     }
-
-    // 更新时间戳 (Supabase 会自动处理 updated_at，除非你有特定需求，否则可省略)
-    // updates.updated_at = new Date().toISOString()
 
     // 调用 Store 更新数据
     await toolsStore.updateTool(editingTool.id, updates)
