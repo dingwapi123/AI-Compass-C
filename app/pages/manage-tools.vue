@@ -65,7 +65,7 @@
       >
         <template #body>
           <div class="p-6">
-            <UForm :state="editingTool" class="space-y-6" @submit="handleUpdateTool">
+            <UForm :state="editingTool" class="space-y-6">
               <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <UFormField label="工具名称" name="name" required class="col-span-1 sm:col-span-2">
                   <UInput v-model="editingTool.name" size="lg" icon="i-heroicons-wrench-screwdriver" />
@@ -165,7 +165,7 @@
         <template #footer>
           <div class="flex items-center justify-end gap-3 p-4 w-full">
             <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
-            <UButton type="submit" label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating" @click="handleUpdateTool" />
+            <UButton label="保存更改" color="primary" variant="solid" size="lg" :loading="updating" @click="handleUpdateTool" />
           </div>
         </template>
       </UModal>
