@@ -3,7 +3,7 @@
     <template #left>
       <NuxtLink
         to="/"
-        class="flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white"
+        class="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white"
       >
         <NuxtImg src="/images/image.png" width="50" height="50" />
         <span>AI Compass</span>
@@ -60,5 +60,6 @@ const navItems = ref([
     ],
   },
   { label: '关于', to: '/about', icon: 'i-heroicons-information-circle' },
+  { label: '工具', to: '/manage-tools', icon: 'i-heroicons-calculator' },
 ])
 </script>
