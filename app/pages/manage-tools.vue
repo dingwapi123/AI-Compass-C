@@ -183,6 +183,7 @@ import { useSupabaseUpload } from '~/composables/useSupabaseUpload'
 const toolsStore = useToolsStore()
 const { tools, totalTools, loading, categories } = storeToRefs(toolsStore)
 const { uploadFile } = useSupabaseUpload()
+const toast = useToast()
 
 const UAvatar = resolveComponent('UAvatar')
 const UBadge = resolveComponent('UBadge')
@@ -300,14 +301,24 @@ const handleUpdateTool = async () => {
     // 调用 Store 更新数据
     await toolsStore.updateTool(editingTool.id, updates)
     
-    alert('更新成功！')
+    toast.add({
+      title: '更新成功',
+      description: `${editingTool.name} 的信息已更新。`,
+      icon: 'i-heroicons-check-circle',
+      color: 'success',
+    })
     isEditModalOpen.value = false
     
     // 可选：重新获取列表以确保数据一致性
     // await fetchTools() 
   } catch (error) {
     console.error('Failed to update tool:', error)
-    alert('更新失败，请重试')
+    toast.add({
+      title: '更新失败',
+      description: error instanceof Error ? error.message : '请稍后重试',
+      icon: 'i-heroicons-exclamation-circle',
+      color: 'error',
+    })
   } finally {
     updating.value = false
   }
