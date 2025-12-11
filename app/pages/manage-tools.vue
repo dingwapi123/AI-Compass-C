@@ -24,7 +24,7 @@
             @update:model-value="handleSearchChange"
           />
           <USelectMenu
-            :model-value="selectedCategory"
+            :model-value="selectedCategory || undefined"
             :items="categoryOptions"
             :search-input="false"
             placeholder="全部分类"
@@ -54,8 +54,120 @@
             size="sm"
           />
         </div>
-      </UCard>
-    </UContainer>
+      <!-- Edit Modal -->
+      <UModal
+        v-model:open="isEditModalOpen"
+        :dismissible="false"
+        title="编辑工具"
+        :ui="{
+          content: 'max-w-2xl sm:max-w-2xl',
+        }"
+      >
+        <template #content>
+          <div class="p-6">
+            <UForm :state="editingTool" class="space-y-6" @submit="handleUpdateTool">
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <UFormField label="工具名称" name="name" required class="col-span-1 sm:col-span-2">
+                  <UInput v-model="editingTool.name" size="lg" icon="i-heroicons-wrench-screwdriver" />
+                </UFormField>
+
+                <UFormField label="URL" name="url" required class="col-span-1 sm:col-span-2">
+                  <UInput v-model="editingTool.url" size="lg" icon="i-heroicons-link" class="w-full"/>
+                </UFormField>
+
+                <UFormField label="分类" name="category_id" required>
+                  <USelectMenu
+                    :model-value="editingTool.category_id"
+                    :items="categoryOptions.filter((c) => c.value !== '')"
+                    :search-input="false"
+                    value-key="value"
+                    size="lg"
+                    class="w-full"
+                    icon="i-heroicons-tag"
+                    @update:model-value="(val: any) => editingTool.category_id = val"
+                  />
+                </UFormField>
+
+                <UFormField label="价格模式" name="pricing" required>
+                  <USelectMenu
+                    v-model="editingTool.pricing"
+                    :items="pricingOptions"
+                    :search-input="false"
+                    size="lg"
+                    class="w-full"
+                    icon="i-heroicons-currency-dollar"
+                  />
+                </UFormField>
+
+                <UFormField label="描述" name="description" required class="col-span-1 sm:col-span-2">
+                  <UTextarea v-model="editingTool.description" :rows="4" size="lg" class="w-full" />  
+                </UFormField>
+
+                <UFormField label="Logo (Icon)" name="icon" class="col-span-1 sm:col-span-2">
+                  <div class="flex gap-4 items-start">
+                    <UAvatar
+                      :src="editingTool.icon || ''"
+                      :alt="editingTool.name"
+                      size="xl"
+                      class="flex-shrink-0"
+                    />
+                    <div class="flex-1 space-y-2">
+                      <UInput
+                        type="file"
+                        accept="image/*"
+                        size="lg"
+                        icon="i-heroicons-photo"
+                        @change="(e: Event) => handleLogoUpload(e)"
+                      />
+                      <p v-if="editingTool.icon" class="text-xs text-gray-500 break-all">
+                        当前: {{ editingTool.icon }}
+                      </p>
+                    </div>
+                  </div>
+                </UFormField>
+
+                <UFormField label="图片 (Images)" name="images" class="col-span-1 sm:col-span-2">
+                  <div class="space-y-3 rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                    <div v-for="(img, index) in (editingTool.images || [])" :key="index" class="flex items-center gap-3">
+                      <div class="h-10 w-16 flex-shrink-0 overflow-hidden rounded bg-gray-200 dark:bg-gray-800">
+                        <img v-if="img" :src="img" class="h-full w-full object-cover" >
+                      </div>
+                      <div class="flex-1 text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {{ img }}
+                      </div>
+                      <UButton
+                        icon="i-heroicons-trash"
+                        color="error"
+                        variant="ghost"
+                        size="sm"
+                        @click="removeImage(index)"
+                      />
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                      <UInput
+                        type="file"
+                        accept="image/*"
+                        size="md"
+                        icon="i-heroicons-plus"
+                        class="flex-1"
+                        @change="(e: Event) => handleImageUpload(e)"
+                      />
+                      <span v-if="uploadInProgress" class="text-xs text-neutral-500">上传中...</span>
+                    </div>
+                  </div>
+                </UFormField>
+              </div>
+
+              <div class="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
+                <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
+                <UButton type="submit" label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating" icon="i-heroicons-check" />
+              </div>
+            </UForm>
+          </div>
+        </template>
+      </UModal>
+    </ucard></UContainer>
   </div>
 </template>
 
@@ -64,9 +176,11 @@ import { storeToRefs } from 'pinia'
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import type { Tool } from '~/types'
+import { useSupabaseUpload } from '~/composables/useSupabaseUpload'
 
 const toolsStore = useToolsStore()
 const { tools, totalTools, loading, categories } = storeToRefs(toolsStore)
+const { uploadFile, uploading: uploadInProgress } = useSupabaseUpload()
 
 const UAvatar = resolveComponent('UAvatar')
 const UBadge = resolveComponent('UBadge')
@@ -80,6 +194,60 @@ const selectedCategory = ref<{ label: string; value: string } | null>({
   label: '全部分类',
   value: '',
 })
+
+// Edit State
+const isEditModalOpen = ref(false)
+const updating = ref(false)
+const editingTool = reactive<Partial<Tool>>({
+  id: '',
+  name: '',
+  description: '',
+  url: '',
+  icon: '',
+  images: [],
+  category_id: '',
+  pricing: 'free',
+})
+
+const pricingOptions = ['free', 'paid', 'freemium']
+
+// Upload Handlers
+const handleLogoUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+
+  const file = input.files[0]
+  if (file) {
+    try {
+      const url = await uploadFile(file, 'tools', 'logos/')
+      editingTool.icon = url
+    } catch (error) {
+      console.error('Logo upload failed:', error)
+      alert('Logo上传失败，请重试')
+    } finally {
+      input.value = '' // Reset input
+    }
+  }
+}
+
+const handleImageUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+
+  const file = input.files[0]
+  if (file) {
+    try {
+      const url = await uploadFile(file, 'tools', 'images/')
+      if (!editingTool.images) editingTool.images = []
+      editingTool.images.push(url)
+    } catch (error) {
+      console.error('Image upload failed:', error)
+      alert('图片上传失败，请重试')
+    } finally {
+      input.value = '' // Reset input
+    }
+  }
+}
 
 // Helpers
 const getCategoryName = (id: string) => {
@@ -100,10 +268,32 @@ const getPricingColor = (pricing: string) => {
 }
 
 // Actions
-const handleDelete = async (row: Tool) => {
-  if (confirm(`确定要删除 ${row.name} 吗？`)) {
-    // TODO: Implement delete logic
-    console.log('Delete', row.id)
+const handleEdit = (row: Tool) => {
+  Object.assign(editingTool, JSON.parse(JSON.stringify(row)))
+  if (!editingTool.images) editingTool.images = []
+  isEditModalOpen.value = true
+}
+
+const handleUpdateTool = async () => {
+  updating.value = true
+  try {
+    // TODO: Implement update logic in store
+    console.log('Update tool:', editingTool)
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    isEditModalOpen.value = false
+    // Refresh list if needed
+    // await fetchTools() 
+  } catch (error) {
+    console.error('Failed to update tool:', error)
+  } finally {
+    updating.value = false
+  }
+}
+
+const removeImage = (index: number) => {
+  if (editingTool.images) {
+    editingTool.images.splice(index, 1)
   }
 }
 
@@ -181,14 +371,7 @@ const columns: TableColumn<Tool>[] = [
           color: 'neutral',
           variant: 'ghost',
           size: 'xs',
-          to: `/tools/${tool.slug}/edit`,
-        }),
-        h(UButton, {
-          icon: 'i-heroicons-trash',
-          color: 'error',
-          variant: 'ghost',
-          size: 'xs',
-          onClick: () => handleDelete(tool),
+          onClick: () => handleEdit(tool),
         }),
       ])
     },
