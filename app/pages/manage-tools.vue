@@ -105,12 +105,12 @@
 
                 <UFormField label="Logo (Icon)" name="icon" class="col-span-1 sm:col-span-2">
                   <div class="flex gap-4 items-start rounded-xl border border-gray-100 p-4 dark:border-gray-800">
-                    <UAvatar
+                    <img
                       :src="logoPreview"
                       :alt="editingTool.name"
                       size="xl"
-                      class="flex-shrink-0 ring-2 ring-gray-200 dark:ring-gray-700"
-                    />
+                      class="rounded-md ring-2 ring-gray-200 dark:ring-gray-700"
+                    >
                     <div class="flex-1 space-y-2">
                       <UInput
                         type="file"
