@@ -59,13 +59,12 @@
         v-model:open="isEditModalOpen"
         title="编辑工具"
         description="修改工具基础信息与资源"
-        scrollable
         :dismissible="true"
         :close="{ variant: 'ghost', color: 'neutral' }"
-        :ui="{ content: 'max-w-4xl sm:max-w-4xl max-h-[85vh] overflow-hidden' }"
+        class="w-[1100px] max-w-[90vw] h-[85vh]"
       >
         <template #body>
-          <div class="p-6 max-h-[calc(85vh-96px)] overflow-y-auto">
+          <div class="p-6">
             <UForm :state="editingTool" class="space-y-6" @submit="handleUpdateTool">
               <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <UFormField label="工具名称" name="name" required class="col-span-1 sm:col-span-2">
@@ -164,9 +163,9 @@
           </div>
         </template>
         <template #footer>
-          <div class="flex justify-end gap-3 border-t border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+          <div class="flex items-center justify-end gap-3 p-4 w-full">
             <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
-            <UButton type="submit" label="保存更改" color="primary" variant="solid" size="lg" :loading="updating" icon="i-heroicons-check" @click="handleUpdateTool" />
+            <UButton type="submit" label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating" @click="handleUpdateTool" />
           </div>
         </template>
       </UModal>
