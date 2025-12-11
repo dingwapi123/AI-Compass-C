@@ -259,6 +259,10 @@ const getPricingColor = (pricing: string) => {
 
 // Actions
 const handleEdit = (row: Tool) => {
+  // 重置文件缓存，防止污染下一个编辑
+  logoFile.value = null
+  imageFiles.value = []
+  
   Object.assign(editingTool, JSON.parse(JSON.stringify(row)))
   if (!editingTool.images) editingTool.images = []
   isEditModalOpen.value = true
@@ -295,8 +299,8 @@ const handleUpdateTool = async () => {
       imageFiles.value = []
     }
 
-    // 更新时间戳
-    updates.updated_at = new Date().toISOString()
+    // 更新时间戳 (Supabase 会自动处理 updated_at，除非你有特定需求，否则可省略)
+    // updates.updated_at = new Date().toISOString()
 
     // 调用 Store 更新数据
     await toolsStore.updateTool(editingTool.id, updates)
