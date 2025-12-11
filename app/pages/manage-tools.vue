@@ -57,14 +57,15 @@
       <!-- Edit Modal -->
       <UModal
         v-model:open="isEditModalOpen"
-        :dismissible="false"
         title="编辑工具"
-        :ui="{
-          content: 'max-w-2xl sm:max-w-2xl',
-        }"
+        description="修改工具基础信息与资源"
+        scrollable
+        :dismissible="true"
+        :close="{ variant: 'ghost', color: 'neutral' }"
+        :ui="{ content: 'max-w-4xl sm:max-w-4xl max-h-[85vh] overflow-hidden' }"
       >
-        <template #content>
-          <div class="p-6">
+        <template #body>
+          <div class="p-6 max-h-[calc(85vh-96px)] overflow-y-auto">
             <UForm :state="editingTool" class="space-y-6" @submit="handleUpdateTool">
               <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <UFormField label="工具名称" name="name" required class="col-span-1 sm:col-span-2">
@@ -104,12 +105,12 @@
                 </UFormField>
 
                 <UFormField label="Logo (Icon)" name="icon" class="col-span-1 sm:col-span-2">
-                  <div class="flex gap-4 items-start">
+                  <div class="flex gap-4 items-start rounded-xl border border-gray-100 p-4 dark:border-gray-800">
                     <UAvatar
                       :src="logoPreview"
                       :alt="editingTool.name"
                       size="xl"
-                      class="flex-shrink-0"
+                      class="flex-shrink-0 ring-2 ring-gray-200 dark:ring-gray-700"
                     />
                     <div class="flex-1 space-y-2">
                       <UInput
@@ -127,7 +128,7 @@
                 </UFormField>
 
                 <UFormField label="图片 (Images)" name="images" class="col-span-1 sm:col-span-2">
-                  <div class="space-y-3 rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                  <div class="space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/50">
                     <div v-for="(img, index) in (editingTool.images || [])" :key="index" class="flex items-center gap-3">
                       <div class="h-10 w-16 flex-shrink-0 overflow-hidden rounded bg-gray-200 dark:bg-gray-800">
                         <img v-if="img" :src="img" class="h-full w-full object-cover" >
@@ -148,6 +149,7 @@
                       <UInput
                         type="file"
                         accept="image/*"
+                        multiple
                         size="md"
                         icon="i-heroicons-plus"
                         class="flex-1"
@@ -158,12 +160,13 @@
                   </div>
                 </UFormField>
               </div>
-
-              <div class="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
-                <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
-                <UButton type="submit" label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating"/>
-              </div>
             </UForm>
+          </div>
+        </template>
+        <template #footer>
+          <div class="flex justify-end gap-3 border-t border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
+            <UButton type="submit" label="保存更改" color="primary" variant="solid" size="lg" :loading="updating" icon="i-heroicons-check" @click="handleUpdateTool" />
           </div>
         </template>
       </UModal>
@@ -229,9 +232,10 @@ const handleLogoSelect = (event: Event) => {
  */
 const handleImageSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (file) {
-    imageFiles.value.push(file)
+  const files = input.files
+  if (!files || files.length === 0) return
+  for (let i = 0; i < files.length; i++) {
+    imageFiles.value.push(files.item(i) as File)
   }
 }
 
