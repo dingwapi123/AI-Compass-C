@@ -366,7 +366,7 @@ const handleCreateTool = () => {
     icon: '',
     images: [],
     category_id: '',
-    pricing: 'free',
+    pricing: '',
     tags: [],
   })
   
