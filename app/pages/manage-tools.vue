@@ -106,7 +106,7 @@
                 <UFormField label="Logo (Icon)" name="icon" class="col-span-1 sm:col-span-2">
                   <div class="flex gap-4 items-start">
                     <UAvatar
-                      :src="editingTool.icon || ''"
+                      :src="logoPreview"
                       :alt="editingTool.name"
                       size="xl"
                       class="flex-shrink-0"
@@ -117,10 +117,10 @@
                         accept="image/*"
                         size="lg"
                         icon="i-heroicons-photo"
-                        @change="(e: Event) => handleLogoUpload(e)"
+                        @change="(e: Event) => handleLogoSelect(e)"
                       />
-                      <p v-if="editingTool.icon" class="text-xs text-gray-500 break-all">
-                        当前: {{ editingTool.icon }}
+                      <p v-if="editingTool.icon || logoFile" class="text-xs text-gray-500 break-all">
+                        当前: {{ logoFile ? '本地预览（保存后上传）' : editingTool.icon }}
                       </p>
                     </div>
                   </div>
@@ -151,9 +151,9 @@
                         size="md"
                         icon="i-heroicons-plus"
                         class="flex-1"
-                        @change="(e: Event) => handleImageUpload(e)"
+                        @change="(e: Event) => handleImageSelect(e)"
                       />
-                      <span v-if="uploadInProgress" class="text-xs text-neutral-500">上传中...</span>
+                      <span v-if="updating" class="text-xs text-neutral-500">处理中...</span>
                     </div>
                   </div>
                 </UFormField>
@@ -161,7 +161,7 @@
 
               <div class="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
                 <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
-                <UButton type="submit" label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating" icon="i-heroicons-check" />
+                <UButton type="submit" label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating"/>
               </div>
             </UForm>
           </div>
@@ -180,7 +180,7 @@ import { useSupabaseUpload } from '~/composables/useSupabaseUpload'
 
 const toolsStore = useToolsStore()
 const { tools, totalTools, loading, categories } = storeToRefs(toolsStore)
-const { uploadFile, uploading: uploadInProgress } = useSupabaseUpload()
+const { uploadFile } = useSupabaseUpload()
 
 const UAvatar = resolveComponent('UAvatar')
 const UBadge = resolveComponent('UBadge')
@@ -210,42 +210,28 @@ const editingTool = reactive<Partial<Tool>>({
 })
 
 const pricingOptions = ['free', 'paid', 'freemium']
+// 待上传文件暂存
+const logoFile = ref<File | null>(null)
+const imageFiles = ref<File[]>([])
+const logoPreview = computed(() => (logoFile.value ? URL.createObjectURL(logoFile.value) : (editingTool.icon || '')))
 
-// Upload Handlers
-const handleLogoUpload = async (event: Event) => {
+/**
+ * 选择 Logo 文件（仅缓存，不立即上传）
+ */
+const handleLogoSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
-  if (!input.files?.length) return
-
-  const file = input.files[0]
-  if (file) {
-    try {
-      const url = await uploadFile(file, 'tools', 'logos/')
-      editingTool.icon = url
-    } catch (error) {
-      console.error('Logo upload failed:', error)
-      alert('Logo上传失败，请重试')
-    } finally {
-      input.value = '' // Reset input
-    }
-  }
+  const file = input.files?.[0] || null
+  logoFile.value = file
 }
 
-const handleImageUpload = async (event: Event) => {
+/**
+ * 选择展示图片文件（支持多次选择，累计缓存）
+ */
+const handleImageSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
-  if (!input.files?.length) return
-
-  const file = input.files[0]
+  const file = input.files?.[0]
   if (file) {
-    try {
-      const url = await uploadFile(file, 'tools', 'images/')
-      if (!editingTool.images) editingTool.images = []
-      editingTool.images.push(url)
-    } catch (error) {
-      console.error('Image upload failed:', error)
-      alert('图片上传失败，请重试')
-    } finally {
-      input.value = '' // Reset input
-    }
+    imageFiles.value.push(file)
   }
 }
 
@@ -277,15 +263,48 @@ const handleEdit = (row: Tool) => {
 const handleUpdateTool = async () => {
   updating.value = true
   try {
-    // TODO: Implement update logic in store
-    console.log('Update tool:', editingTool)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    if (!editingTool.id) {
+      throw new Error('Tool ID is missing')
+    }
+
+    // 1) 上传文件（如有选择）并组装最终字段
+    const updates = JSON.parse(JSON.stringify(editingTool))
+    delete updates.id // ID 不可更新
+
+    // 上传 Logo 至 tools/logos，并将返回 URL 写入 icon
+    if (logoFile.value) {
+      const logoUrl = await uploadFile(logoFile.value, 'tools', 'logos/')
+      updates.icon = logoUrl
+      editingTool.icon = logoUrl
+    }
+
+    // 上传所有待新增图片至 tools/images，并追加到 images
+    if (!updates.images) updates.images = []
+    if (imageFiles.value.length > 0) {
+      const uploadedUrls: string[] = []
+      for (const file of imageFiles.value) {
+        const url = await uploadFile(file, 'tools', 'images/')
+        uploadedUrls.push(url)
+      }
+      updates.images = [...(updates.images as string[]), ...uploadedUrls]
+      editingTool.images = updates.images
+      imageFiles.value = []
+    }
+
+    // 更新时间戳
+    updates.updated_at = new Date().toISOString()
+
+    // 调用 Store 更新数据
+    await toolsStore.updateTool(editingTool.id, updates)
+    
+    alert('更新成功！')
     isEditModalOpen.value = false
-    // Refresh list if needed
+    
+    // 可选：重新获取列表以确保数据一致性
     // await fetchTools() 
   } catch (error) {
     console.error('Failed to update tool:', error)
+    alert('更新失败，请重试')
   } finally {
     updating.value = false
   }

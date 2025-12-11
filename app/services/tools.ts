@@ -165,6 +165,29 @@ export const fetchToolBySlug = async (slug: string): Promise<Tool | null> => {
 }
 
 /**
+ * 更新工具信息
+ * @param id - 工具 ID
+ * @param updates - 更新的字段
+ * @returns Promise<Tool | null> - 返回更新后的工具信息或 null
+ */
+export const updateTool = async (id: string, updates: Partial<Tool>): Promise<Tool | null> => {
+  const supabase = useSupabaseClient()
+  const { data, error } = await supabase
+    .from('tools')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error(`Error updating tool ${id}:`, error)
+    throw error
+  }
+
+  return data as Tool
+}
+
+/**
  * 根据分类 ID 随机获取工具列表
  * @param categoryId - 分类 ID
  * @param count - 需要获取的工具数量，默认为 3

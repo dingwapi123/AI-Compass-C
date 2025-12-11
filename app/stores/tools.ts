@@ -7,6 +7,7 @@ import {
   fetchTools,
   fetchToolBySlug,
   fetchRandomToolsByCategory,
+  updateTool
 } from '~/services/tools'
 
 export const useToolsStore = defineStore('tools', () => {
@@ -137,6 +138,33 @@ export const useToolsStore = defineStore('tools', () => {
     }
   }
 
+  /**
+   * 更新工具信息
+   */
+  const updateToolAction = async (id: string, updates: Partial<Tool>) => {
+    loading.value = true
+    try {
+      const updatedTool = await updateTool(id, updates)
+      if (updatedTool) {
+        // 更新本地状态
+        const index = tools.value.findIndex((t) => t.id === id)
+        if (index !== -1) {
+          tools.value[index] = updatedTool
+        }
+        if (currentTool.value?.id === id) {
+          currentTool.value = updatedTool
+        }
+      }
+      return updatedTool
+    } catch (e) {
+      console.error(`Store: Error updating tool ${id}`, e)
+      error.value = (e as Error).message
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     categories,
     tools,
@@ -151,5 +179,6 @@ export const useToolsStore = defineStore('tools', () => {
     fetchToolsByCategory: fetchToolsByCategoryAction,
     fetchTool: fetchToolAction,
     fetchRelatedTools: fetchRelatedToolsAction,
+    updateTool: updateToolAction,
   }
 })
