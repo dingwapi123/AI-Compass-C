@@ -14,8 +14,7 @@
             <div class="flex-shrink-0">
               <UAvatar
                 :src="
-                  (tool.images && tool.images[0]) ||
-                  `https://ui-avatars.com/api/?name=${tool.name}&background=random`
+                  tool.icon || `https://ui-avatars.com/api/?name=${tool.name}&background=random`
                 "
                 :alt="tool.name"
                 size="3xl"
@@ -117,24 +116,32 @@
             >
               <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Gallery</h2>
               <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <!-- Placeholder 1 -->
+                <!-- Image 0 -->
                 <div
-                  class="group flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
+                  class="group relative aspect-video overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
                 >
-                  <div
-                    class="text-gray-400 transition-transform duration-300 group-hover:scale-110"
-                  >
-                    <UIcon name="i-heroicons-photo" class="mx-auto mb-2 h-12 w-12" />
+                  <img
+                    v-if="tool.images && tool.images[0]"
+                    :src="tool.images[0]"
+                    :alt="`${tool.name} image 1`"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div v-else class="flex h-full w-full items-center justify-center text-gray-400">
+                    <UIcon name="i-heroicons-photo" class="h-12 w-12" />
                   </div>
                 </div>
-                <!-- Placeholder 2 -->
+                <!-- Image 1 -->
                 <div
-                  class="group flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
+                  class="group relative aspect-video overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
                 >
-                  <div
-                    class="text-gray-400 transition-transform duration-300 group-hover:scale-110"
-                  >
-                    <UIcon name="i-heroicons-photo" class="mx-auto mb-2 h-12 w-12" />
+                  <img
+                    v-if="tool.images && tool.images[1]"
+                    :src="tool.images[1]"
+                    :alt="`${tool.name} image 2`"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div v-else class="flex h-full w-full items-center justify-center text-gray-400">
+                    <UIcon name="i-heroicons-photo" class="h-12 w-12" />
                   </div>
                 </div>
               </div>
