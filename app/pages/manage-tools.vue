@@ -9,7 +9,7 @@
           color="neutral"
           variant="solid"
           label="新增工具"
-          to="/tools/create"
+          @click="handleCreateTool"
         />
       </div>
 
@@ -54,10 +54,10 @@
             size="sm"
           />
         </div>
-      <!-- Edit Modal -->
+      <!-- Edit/Create Modal -->
       <UModal
         v-model:open="isEditModalOpen"
-        title="编辑工具"
+        :title="modalMode === 'create' ? '新增工具' : '编辑工具'"
         description="修改工具基础信息与资源"
         :dismissible="true"
         :close="{ variant: 'ghost', color: 'neutral' }"
@@ -65,10 +65,20 @@
       >
         <template #body>
           <div class="p-6">
-            <UForm :state="editingTool" class="space-y-6">
+            <UForm :state="editingTool" class="space-y-6" @submit="handleSubmit">
               <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <UFormField label="工具名称" name="name" required class="col-span-1 sm:col-span-2">
                   <UInput v-model="editingTool.name" size="lg" icon="i-heroicons-wrench-screwdriver" />
+                </UFormField>
+
+                <UFormField label="Slug (唯一标识)" name="slug" required class="col-span-1 sm:col-span-2">
+                   <UInput 
+                    v-model="editingTool.slug" 
+                    size="lg" 
+                    icon="i-heroicons-identification" 
+                    placeholder="只能包含字母和数字" 
+                    :disabled="modalMode === 'edit'"
+                  />
                 </UFormField>
 
                 <UFormField label="URL" name="url" required class="col-span-1 sm:col-span-2">
@@ -97,6 +107,47 @@
                     class="w-full"
                     icon="i-heroicons-currency-dollar"
                   />
+                </UFormField>
+
+                <UFormField label="Tags (标签)" name="tags" class="col-span-1 sm:col-span-2">
+                  <div class="space-y-3">
+                    <div class="flex flex-wrap gap-2">
+                      <UBadge
+                        v-for="(tag, index) in (editingTool.tags || [])"
+                        :key="index"
+                        color="neutral"
+                        variant="soft"
+                        size="md"
+                      >
+                        {{ tag }}
+                        <UButton
+                          icon="i-heroicons-x-mark"
+                          color="neutral"
+                          variant="soft"
+                          :padded="false"
+                          size="xs"
+                          class="ml-1"
+                          @click="removeTag(index)"
+                        />
+                      </UBadge>
+                    </div>
+                    <div class="flex gap-2">
+                      <UInput
+                        v-model="tagInput"
+                        placeholder="输入标签后按回车添加"
+                        icon="i-heroicons-tag"
+                        size="lg"
+                        class="flex-1"
+                        @keyup.enter.prevent="addTag"
+                      />
+                      <UButton
+                        icon="i-heroicons-plus"
+                        color="neutral"
+                        variant="soft"
+                        @click="addTag"
+                      />
+                    </div>
+                  </div>
                 </UFormField>
 
                 <UFormField label="描述" name="description" required class="col-span-1 sm:col-span-2">
@@ -161,7 +212,6 @@
                     
                     <div class="flex items-center gap-2">
                       <UInput
-                        ref="imageInputRef"
                         type="file"
                         accept="image/*"
                         multiple
@@ -181,7 +231,7 @@
         <template #footer>
           <div class="flex items-center justify-end gap-3 p-4 w-full">
             <UButton label="取消" color="neutral" variant="soft" size="lg" @click="isEditModalOpen = false" />
-            <UButton label="保存更改" color="primary" variant="solid" size="lg" :loading="updating" @click="handleUpdateTool" />
+            <UButton label="保存更改" color="neutral" variant="solid" size="lg" :loading="updating" @click="handleSubmit" />
           </div>
         </template>
       </UModal>
@@ -216,16 +266,19 @@ const selectedCategory = ref<{ label: string; value: string } | null>({
 
 // Edit State
 const isEditModalOpen = ref(false)
+const modalMode = ref<'create' | 'edit'>('edit')
 const updating = ref(false)
 const editingTool = reactive<Partial<Tool>>({
   id: '',
   name: '',
+  slug: '',
   description: '',
   url: '',
   icon: '',
   images: [],
   category_id: '',
   pricing: 'free',
+  tags: [],
 })
 
 const pricingOptions = ['free', 'paid', 'freemium']
@@ -233,7 +286,9 @@ const pricingOptions = ['free', 'paid', 'freemium']
 const logoFile = ref<File | null>(null)
 const imageFiles = ref<File[]>([])
 const logoPreview = computed(() => (logoFile.value ? URL.createObjectURL(logoFile.value) : (editingTool.icon || '')))
-const imageInputRef = ref<any>(null)
+
+// Tag Input State
+const tagInput = ref('')
 
 // Helpers
 const getObjectUrl = (file: File) => URL.createObjectURL(file)
@@ -265,6 +320,22 @@ const removeNewImage = (index: number) => {
   imageFiles.value.splice(index, 1)
 }
 
+// Tag Actions
+const addTag = () => {
+  const val = tagInput.value.trim()
+  if (val && (!editingTool.tags || !editingTool.tags.includes(val))) {
+    if (!editingTool.tags) editingTool.tags = []
+    editingTool.tags.push(val)
+  }
+  tagInput.value = ''
+}
+
+const removeTag = (index: number) => {
+  if (editingTool.tags) {
+    editingTool.tags.splice(index, 1)
+  }
+}
+
 // Helpers
 const getCategoryName = (id: string) => {
   return categories.value.find((c) => c.id === id)?.name || '-'
@@ -284,26 +355,68 @@ const getPricingColor = (pricing: string) => {
 }
 
 // Actions
+const handleCreateTool = () => {
+  // 重置表单
+  Object.assign(editingTool, {
+    id: '',
+    name: '',
+    slug: '',
+    description: '',
+    url: '',
+    icon: '',
+    images: [],
+    category_id: '',
+    pricing: 'free',
+    tags: [],
+  })
+  
+  // 重置文件缓存
+  logoFile.value = null
+  imageFiles.value = []
+  tagInput.value = ''
+  
+  modalMode.value = 'create'
+  isEditModalOpen.value = true
+}
+
 const handleEdit = (row: Tool) => {
   // 重置文件缓存，防止污染下一个编辑
   logoFile.value = null
   imageFiles.value = []
+  tagInput.value = ''
   
   Object.assign(editingTool, JSON.parse(JSON.stringify(row)))
   if (!editingTool.images) editingTool.images = []
+  if (!editingTool.tags) editingTool.tags = []
+  
+  modalMode.value = 'edit'
   isEditModalOpen.value = true
 }
 
-const handleUpdateTool = async () => {
+const handleSubmit = async () => {
   updating.value = true
   try {
-    if (!editingTool.id) {
+    // 校验 Slug
+    if (modalMode.value === 'create') {
+      if (!editingTool.slug) {
+        throw new Error('Slug 是必填项')
+      }
+      if (!/^[a-zA-Z0-9]+$/.test(editingTool.slug)) {
+        throw new Error('Slug 只能包含字母和数字')
+      }
+    }
+
+    if (modalMode.value === 'edit' && !editingTool.id) {
       throw new Error('Tool ID is missing')
     }
 
     // 1) 上传文件（如有选择）并组装最终字段
     const updates = JSON.parse(JSON.stringify(editingTool))
-    delete updates.id // ID 不可更新
+    
+    // 如果是编辑模式，不能更新 ID
+    if (modalMode.value === 'edit') {
+      delete updates.id 
+    }
 
     // 上传 Logo 至 tools/logos，并将返回 URL 写入 icon
     if (logoFile.value) {
@@ -326,22 +439,34 @@ const handleUpdateTool = async () => {
     }
 
     // 调用 Store 更新数据
-    await toolsStore.updateTool(editingTool.id, updates)
+    if (modalMode.value === 'create') {
+        // 创建时不需要 ID
+        delete updates.id
+        await toolsStore.createTool(updates)
+        toast.add({
+          title: '创建成功',
+          description: `${editingTool.name} 已创建。`,
+          icon: 'i-heroicons-check-circle',
+          color: 'success',
+        })
+    } else {
+        await toolsStore.updateTool(editingTool.id!, updates)
+        toast.add({
+          title: '更新成功',
+          description: `${editingTool.name} 的信息已更新。`,
+          icon: 'i-heroicons-check-circle',
+          color: 'success',
+        })
+    }
     
-    toast.add({
-      title: '更新成功',
-      description: `${editingTool.name} 的信息已更新。`,
-      icon: 'i-heroicons-check-circle',
-      color: 'success',
-    })
     isEditModalOpen.value = false
     
     // 可选：重新获取列表以确保数据一致性
     // await fetchTools() 
   } catch (error) {
-    console.error('Failed to update tool:', error)
+    console.error('Failed to save tool:', error)
     toast.add({
-      title: '更新失败',
+      title: '操作失败',
       description: error instanceof Error ? error.message : '请稍后重试',
       icon: 'i-heroicons-exclamation-circle',
       color: 'error',

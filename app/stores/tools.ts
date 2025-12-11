@@ -7,7 +7,8 @@ import {
   fetchTools,
   fetchToolBySlug,
   fetchRandomToolsByCategory,
-  updateTool
+  updateTool,
+  createTool,
 } from '~/services/tools'
 
 export const useToolsStore = defineStore('tools', () => {
@@ -165,6 +166,28 @@ export const useToolsStore = defineStore('tools', () => {
     }
   }
 
+  /**
+   * 创建新工具
+   */
+  const createToolAction = async (tool: Partial<Tool>) => {
+    loading.value = true
+    try {
+      const newTool = await createTool(tool)
+      if (newTool) {
+        // 更新本地状态
+        tools.value.unshift(newTool)
+        totalTools.value++
+      }
+      return newTool
+    } catch (e) {
+      console.error('Store: Error creating tool', e)
+      error.value = (e as Error).message
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     categories,
     tools,
@@ -180,5 +203,6 @@ export const useToolsStore = defineStore('tools', () => {
     fetchTool: fetchToolAction,
     fetchRelatedTools: fetchRelatedToolsAction,
     updateTool: updateToolAction,
+    createTool: createToolAction,
   }
 })

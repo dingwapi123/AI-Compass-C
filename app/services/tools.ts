@@ -188,6 +188,31 @@ export const updateTool = async (id: string, updates: Partial<Tool>): Promise<To
 }
 
 /**
+ * 创建新工具
+ * @param tool - 新工具的数据
+ * @returns Promise<Tool | null> - 返回创建后的工具信息或 null
+ */
+export const createTool = async (tool: Partial<Tool>): Promise<Tool | null> => {
+  const supabase = useSupabaseClient()
+  
+  // 移除 id, created_at, updated_at 等由数据库自动生成的字段
+  const { id, created_at, updated_at, ...toolData } = tool
+  
+  const { data, error } = await supabase
+    .from('tools')
+    .insert(toolData)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error creating tool:', error)
+    throw error
+  }
+
+  return data as Tool
+}
+
+/**
  * 根据分类 ID 随机获取工具列表
  * @param categoryId - 分类 ID
  * @param count - 需要获取的工具数量，默认为 3
