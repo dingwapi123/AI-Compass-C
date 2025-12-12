@@ -84,37 +84,15 @@ export default defineEventHandler(async (event) => {
       }
 
       // 解析日期
-      let dateStr = ''
-      let timeStr = ''
-
-      try {
-        const dateObj = new Date(item.news_date)
-        if (!isNaN(dateObj.getTime())) {
-          const year = dateObj.getFullYear()
-          const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-          const day = String(dateObj.getDate()).padStart(2, '0')
-          const hours = String(dateObj.getHours()).padStart(2, '0')
-          const minutes = String(dateObj.getMinutes()).padStart(2, '0')
-
-          dateStr = `${year}-${month}-${day}`
-          timeStr = `${hours}:${minutes}`
-        } else {
-          // Fallback
-          const now = new Date()
-          dateStr = now.toISOString().split('T')[0]
-          timeStr = '00:00'
-        }
-      } catch {
-        // Ignore date parse errors
-        const now = new Date()
-        dateStr = now.toISOString().split('T')[0]
-        timeStr = '00:00'
-      }
+      // 格式: "2025-12-12 15:57:00 +0800 CST"
+      // 简单粗暴：直接按空格分割取前两段
+      const parts = (item.news_date || '').split(' ')
+      const dateStr = parts[0] || new Date().toISOString().split('T')[0]
+      const timeStr = parts[1] ? parts[1].slice(0, 5) : '00:00'
 
       return {
         id: String(item.id || item.uuid),
         title: item.title,
-        summary: item.content,
         content: item.content,
         source: item.source || 'AI 快讯',
         time: timeStr,

@@ -123,7 +123,7 @@ const mapToTimelineItems = (items: NewsItem[]): (TimelineItem & { originalData: 
   return items.map((item) => ({
     icon: 'i-heroicons-newspaper',
     title: item.title,
-    description: item.summary,
+    description: item.content,
     originalData: item,
   }))
 }
