@@ -542,7 +542,7 @@ const columns: TableColumn<Tool>[] = [
     header: '创建时间',
     cell: ({ row }) => {
       const date = new Date(row.getValue('created_at'))
-      return date.toLocaleDateString()
+      return date.toLocaleDateString('zh-CN')
     },
   },
   {
