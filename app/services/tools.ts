@@ -171,20 +171,17 @@ export const fetchToolBySlug = async (slug: string): Promise<Tool | null> => {
  * @returns Promise<Tool | null> - 返回更新后的工具信息或 null
  */
 export const updateTool = async (id: string, updates: Partial<Tool>): Promise<Tool | null> => {
-  const supabase = useSupabaseClient()
-  const { data, error } = await supabase
-    .from('tools')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) {
+  // 使用后端 API 更新
+  try {
+    const data = await $fetch<Tool>('/api/tools/update', {
+      method: 'POST',
+      body: { id, updates },
+    })
+    return data
+  } catch (error) {
     console.error(`Error updating tool ${id}:`, error)
     throw error
   }
-
-  return data as Tool
 }
 
 /**
@@ -193,23 +190,17 @@ export const updateTool = async (id: string, updates: Partial<Tool>): Promise<To
  * @returns Promise<Tool | null> - 返回创建后的工具信息或 null
  */
 export const createTool = async (tool: Partial<Tool>): Promise<Tool | null> => {
-  const supabase = useSupabaseClient()
-  
-  // 移除 id, created_at, updated_at 等由数据库自动生成的字段
-  const { id, created_at, updated_at, ...toolData } = tool
-  
-  const { data, error } = await supabase
-    .from('tools')
-    .insert(toolData)
-    .select()
-    .single()
-
-  if (error) {
+  // 使用后端 API 创建
+  try {
+    const data = await $fetch<Tool>('/api/tools/create', {
+      method: 'POST',
+      body: tool,
+    })
+    return data
+  } catch (error) {
     console.error('Error creating tool:', error)
     throw error
   }
-
-  return data as Tool
 }
 
 /**
