@@ -9,11 +9,13 @@ export const fetchNewsByDate = async (date: Date): Promise<NewsItem[]> => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-  const dateParam = `${year}-${month}-${day} 00:00:00`
+
+  const startTime = `${year}-${month}-${day} 00:00:00`
+  const endTime = `${year}-${month}-${day} 23:59:59`
 
   try {
     const response = await $fetch<{ items: NewsItem[] }>('/api/news', {
-      query: { date: dateParam },
+      query: { startTime, endTime },
     })
     return response.items || []
   } catch (error) {

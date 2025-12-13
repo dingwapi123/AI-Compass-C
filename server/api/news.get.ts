@@ -21,16 +21,19 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const query = getQuery(event)
 
-  // 默认使用今天 00:00:00，或者用户指定的日期
-  let dateParam = ''
-  if (query.date) {
-    dateParam = String(query.date)
-  } else {
+  // 获取查询参数中的 startTime 和 endTime
+  let startTime = String(query.startTime || '')
+  let endTime = String(query.endTime || '')
+
+  // 如果未提供，默认使用今天的时间范围
+  if (!startTime || !endTime) {
     const now = new Date()
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
     const day = String(now.getDate()).padStart(2, '0')
-    dateParam = `${year}-${month}-${day} 00:00:00`
+
+    startTime = `${year}-${month}-${day} 00:00:00`
+    endTime = `${year}-${month}-${day} 23:59:59`
   }
 
   // 检查 Token
@@ -51,7 +54,8 @@ export default defineEventHandler(async (event) => {
       // 每日新闻获取工作流 ID
       workflow_id: '7581112574068310016',
       parameters: {
-        time: dateParam,
+        startTime: startTime,
+        endTime: endTime,
       },
     })
 

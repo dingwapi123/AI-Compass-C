@@ -136,24 +136,33 @@ const fetchNews = async () => {
   error.value = false
 
   try {
-    const newItems = await fetchNewsByDate(currentFetchDate.value)
+    let attempts = 0
+    const maxAttempts = 5 // 最多回溯 5 天，避免死循环
+    let foundNews = false
 
-    if (newItems.length > 0) {
-      const existingIds = new Set(newsItems.value.map((i) => i.id))
-      const uniqueItems = newItems.filter((i) => !existingIds.has(i.id))
-      newsItems.value.push(...uniqueItems)
-    }
+    // 循环查找直到获取到数据或达到限制
+    while (!foundNews && attempts < maxAttempts && hasMore.value) {
+      const newItems = await fetchNewsByDate(currentFetchDate.value)
 
-    // 准备下一次加载前一天的数据
-    const nextDate = new Date(currentFetchDate.value)
-    nextDate.setDate(nextDate.getDate() - 1)
-    currentFetchDate.value = nextDate
+      if (newItems.length > 0) {
+        const existingIds = new Set(newsItems.value.map((i) => i.id))
+        const uniqueItems = newItems.filter((i) => !existingIds.has(i.id))
+        newsItems.value.push(...uniqueItems)
+        foundNews = true
+      }
 
-    // 限制回溯到30天前
-    const limitDate = new Date()
-    limitDate.setDate(limitDate.getDate() - 30)
-    if (currentFetchDate.value < limitDate) {
-      hasMore.value = false
+      // 无论是否找到数据，都将日期回溯一天，为下一次循环或请求做准备
+      const nextDate = new Date(currentFetchDate.value)
+      nextDate.setDate(nextDate.getDate() - 1)
+      currentFetchDate.value = nextDate
+      attempts++
+
+      // 检查是否超过回溯限制（30天）
+      const limitDate = new Date()
+      limitDate.setDate(limitDate.getDate() - 30)
+      if (currentFetchDate.value < limitDate) {
+        hasMore.value = false
+      }
     }
   } catch (e) {
     console.error('Failed to fetch news:', e)
