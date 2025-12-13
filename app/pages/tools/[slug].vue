@@ -95,27 +95,15 @@
         </div>
 
         <!-- 3. Content Grid -->
-        <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
-          <!-- Left Column: Description & Gallery -->
-          <div class="space-y-8 lg:col-span-2">
-            <!-- Description Card -->
-            <section
-              class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
-            >
-              <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Description</h2>
-              <div
-                class="prose dark:prose-invert max-w-none leading-relaxed whitespace-pre-line text-gray-600 dark:text-gray-300"
-              >
-                {{ tool.description }}
-              </div>
-            </section>
-
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <!-- Left Column: Gallery -->
+          <div class="flex flex-col space-y-8 lg:col-span-2">
             <!-- Gallery Card -->
             <section
-              class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              class="flex-1 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
               <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Gallery</h2>
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div class="grid h-full grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Image 0 -->
                 <div
                   class="group relative aspect-video overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800"
@@ -149,9 +137,9 @@
           </div>
 
           <!-- Right Column: Similar Tools -->
-          <div class="space-y-8">
+          <div class="flex flex-col space-y-8">
             <div
-              class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              class="flex-1 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
               <h3 class="mb-6 text-xl font-bold text-gray-900 dark:text-white">Similar Tools</h3>
 
