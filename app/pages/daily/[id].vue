@@ -50,8 +50,11 @@
 
 <script setup lang="ts">
 import { fetchDailyNews, type DailyNewsItem } from '~/services/daily'
-// MarkdownRender is now registered globally via plugin
-// Styles are imported in main.css
+
+// SSR 端给一个空壳组件，避免 “Failed to resolve component”
+const MarkdownRender = import.meta.server
+  ? { name: 'MarkdownRender', render: () => null }
+  : defineAsyncComponent(() => import('markstream-vue'))
 
 const route = useRoute()
 const id = route.params.id as string
