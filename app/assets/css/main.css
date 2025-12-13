@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+@layer components {
+  @import 'markstream-vue/index.css';
+}
+
 @theme {
   --font-sans: 'Plus Jakarta Sans', 'PingFang SC', system-ui, sans-serif;
 

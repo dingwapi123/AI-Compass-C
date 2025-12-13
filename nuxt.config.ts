@@ -81,4 +81,7 @@ export default defineNuxtConfig({
       meta: [{ name: 'color-scheme', content: 'light dark' }],
     },
   },
+  build: {
+    transpile: ['markstream-vue'],
+  },
 })

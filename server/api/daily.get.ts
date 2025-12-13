@@ -25,7 +25,8 @@ export default defineEventHandler(async (event) => {
       {
         id: 1,
         report_date: '2025-12-13 00:00:00',
-        images_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop',
+        images_url:
+          'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop',
         content: `
 ## 🤖 AI 技术前沿
 
@@ -39,8 +40,8 @@ Google 今日正式发布了下一代多模态模型 **Gemini 3**。新模型在
 ### 2. OpenAI Sora 2.0 预览
 OpenAI 展示了 **Sora 2.0** 的生成效果。新版本生成的视频时长可达 2 分钟，且支持更复杂的物理模拟和角色一致性保持。
 
-\`\`\`python
-// 示例：使用 Python SDK 调用 Sora 2.0 (伪代码)
+\`\`\`javascript
+// 示例：使用 JavaScript SDK 调用 Sora 2.0 (伪代码)
 import openai
 
 client = openai.Client()
@@ -49,14 +50,15 @@ response = client.video.generate(
     prompt="A cyberpunk city with neon lights, 4k resolution, cinematic lighting",
     duration=120
 )
-print(response.video_url)
+console.log(response.video_url)
 \`\`\`
-        `
+        `,
       },
       {
         id: 2,
         report_date: '2025-12-12 00:00:00',
-        images_url: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop',
+        images_url:
+          'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop',
         content: `
 ## 🚀 行业动态
 
@@ -73,12 +75,13 @@ print(response.video_url)
 | 搜索 | 关键词匹配 | 语义理解 |
 | 任务栏 | 静态 | 动态预测 |
 | 文件管理 | 目录树 | 智能分类 |
-        `
+        `,
       },
       {
         id: 3,
         report_date: '2025-12-11 00:00:00',
-        images_url: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?q=80&w=800&auto=format&fit=crop',
+        images_url:
+          'https://images.unsplash.com/photo-1617791160505-6f00504e3519?q=80&w=800&auto=format&fit=crop',
         content: `
 ## 💡 创新应用
 
@@ -87,8 +90,8 @@ Notion 发布了 AI 2.0 版本，新增了“智能数据库”功能，能够�
 
 ### 2. Midjourney V7 alpha 测试
 Midjourney V7 开启 alpha 测试，重点增强了对文字渲染的控制能力，以及更精准的光影模拟。
-        `
-      }
+        `,
+      },
     ]
 
     const newsItems = mockData.map((item) => {
@@ -155,7 +158,7 @@ Midjourney V7 开启 alpha 测试，重点增强了对文字渲染的控制能�
       if (typeof res.data === 'object') {
         parsedData = res.data as unknown as CozeResponseData
       } else {
-         throw new Error('Invalid JSON response from Coze')
+        throw new Error('Invalid JSON response from Coze')
       }
     }
 
@@ -170,14 +173,15 @@ Midjourney V7 开启 alpha 测试，重点增强了对文字渲染的控制能�
         id: String(item.id),
         content: item.content,
         date: dateStr,
-        image: item.images_url || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop',
+        image:
+          item.images_url ||
+          'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop',
       }
     })
 
     return {
       items: newsItems,
     }
-
   } catch (error: unknown) {
     console.error('Coze API Error (Daily):', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch daily news'

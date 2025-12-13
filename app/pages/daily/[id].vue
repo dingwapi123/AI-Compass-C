@@ -50,8 +50,8 @@
 
 <script setup lang="ts">
 import { fetchDailyNews, type DailyNewsItem } from '~/services/daily'
-import MarkdownRender from 'markstream-vue'
-import 'markstream-vue/index.css'
+// MarkdownRender is now registered globally via plugin
+// Styles are imported in main.css
 
 const route = useRoute()
 const id = route.params.id as string
