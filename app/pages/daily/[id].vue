@@ -34,7 +34,7 @@
           class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
         >
           <ClientOnly>
-            <MarkdownRender :content="dailyItem.content" />
+            <MarkdownRender :content="dailyItem.content" custom-id="daily" />
           </ClientOnly>
         </div>
       </div>

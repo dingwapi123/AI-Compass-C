@@ -1,7 +1,11 @@
+// plugins/markstream.client.ts
 import { defineNuxtPlugin } from '#app'
-import MarkdownRender from 'markstream-vue'
+import MarkdownRender, { setCustomComponents, MarkdownCodeBlockNode } from 'markstream-vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // 注册全局组件
   nuxtApp.vueApp.component('MarkdownRender', MarkdownRender)
+
+  setCustomComponents('daily', {
+    code_block: MarkdownCodeBlockNode,
+  })
 })
