@@ -1,9 +1,4 @@
-export interface DailyNewsItem {
-  id: string
-  content: string
-  date: string
-  image: string
-}
+import type { DailyNewsItem } from '~/types/daily'
 
 /**
  * 获取 AI 日报
