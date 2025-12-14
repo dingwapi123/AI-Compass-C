@@ -54,6 +54,6 @@ const navItems = ref([
     ],
   },
   { label: '关于', to: '/about', icon: 'i-heroicons-information-circle' },
-  { label: '工具', to: '/manage-tools', icon: 'i-heroicons-calculator' },
+  // { label: '工具', to: '/manage-tools', icon: 'i-heroicons-calculator' },
 ])
 </script>
