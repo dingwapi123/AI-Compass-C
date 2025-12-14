@@ -40,7 +40,7 @@ Google 今日正式发布了下一代多模态模型 **Gemini 3**。新模型在
 ### 2. OpenAI Sora 2.0 预览
 OpenAI 展示了 **Sora 2.0** 的生成效果。新版本生成的视频时长可达 2 分钟，且支持更复杂的物理模拟和角色一致性保持。
 
-\`\`\`javascript
+\`\`\` javascript
 // 示例：使用 JavaScript SDK 调用 Sora 2.0 (伪代码)
 import openai
 

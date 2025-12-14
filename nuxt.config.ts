@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@nuxt/ui',
+    '@nuxtjs/mdc',
     '@nuxt/content',
     '@nuxt/image',
     '@pinia/nuxt',

@@ -33,9 +33,7 @@
         <div
           class="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900"
         >
-          <ClientOnly>
-            <MarkdownRender :content="dailyItem.content" custom-id="daily" />
-          </ClientOnly>
+          <MDC :value="dailyItem.content" tag="article" />
         </div>
       </div>
 
@@ -50,11 +48,6 @@
 
 <script setup lang="ts">
 import { fetchDailyNews, type DailyNewsItem } from '~/services/daily'
-
-// SSR 端给一个空壳组件，避免 “Failed to resolve component”
-const MarkdownRender = import.meta.server
-  ? { name: 'MarkdownRender', render: () => null }
-  : defineAsyncComponent(() => import('markstream-vue'))
 
 const route = useRoute()
 const id = route.params.id as string
