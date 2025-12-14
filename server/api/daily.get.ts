@@ -1,9 +1,16 @@
 import { CozeAPI } from '@coze/api'
 
-// 定义 Coze 返回的数据结构
-interface CozeDailyResponse {
-  outputList: string
+// 定义 Coze 返回的数据项结构
+interface CozeDailyItem {
+  content: string
   report_date: string
+  report_title: string
+}
+
+// 定义 Coze 响应结构
+interface CozeDailyResponse {
+  outputList: CozeDailyItem[]
+  [key: string]: any
 }
 
 export default defineEventHandler(async (event) => {
@@ -60,33 +67,39 @@ export default defineEventHandler(async (event) => {
       throw new Error('Invalid JSON response from Coze')
     }
 
-    const content = parsedData.outputList || ''
-    const reportDateStr = parsedData.report_date || ''
+    const outputList = parsedData.outputList || []
 
-    // 解析日期
-    // 格式: "2025-12-14 17:02:23 +0800 CST"
-    const parts = reportDateStr.split(' ')
-    const dateStr = parts[0] || dateParam
-
-    // 构造返回数据
-    // 日报通常每天只有一条，我们将内容作为一条记录返回
-    const dailyItem = {
-      id: String(Date.now()), // 生成一个临时 ID
-      content: content,
-      date: dateStr,
-      // 日报可能没有封面图，或者可以从内容中解析第一张图（可选优化）
-      image: '',
+    if (!Array.isArray(outputList)) {
+      console.warn('Unexpected Coze outputList structure:', outputList)
+      return { items: [] }
     }
 
+    // 映射数据
+    const items = outputList.map((item, index) => {
+      const reportDateStr = item.report_date || ''
+
+      // 解析日期
+      // 格式: "2025-12-14 17:02:23 +0800 CST"
+      const parts = reportDateStr.split(' ')
+      const dateStr = parts[0] || dateParam
+
+      return {
+        // 使用索引作为 ID，确保列表渲染时的唯一性
+        id: String(index),
+        title: item.report_title || `${dateStr} AI日报`,
+        content: item.content,
+        date: dateStr,
+        image: '',
+      }
+    })
+
     return {
-      items: [dailyItem],
+      items: items,
     }
   } catch (error: unknown) {
     console.error('Coze API Error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch daily news'
 
-    // 如果是开发环境，可以考虑返回 Mock 数据作为降级（可选）
-    // 但为了确保用户知道是 API 失败，这里抛出错误
     throw createError({
       statusCode: 500,
       statusMessage: errorMessage,
