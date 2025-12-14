@@ -40,7 +40,7 @@ Google 今日正式发布了下一代多模态模型 **Gemini 3**。新模型在
 ### 2. OpenAI Sora 2.0 预览
 OpenAI 展示了 **Sora 2.0** 的生成效果。新版本生成的视频时长可达 2 分钟，且支持更复杂的物理模拟和角色一致性保持。
 
-\`\`\` javascript
+\`\`\` js [file.js]
 // 示例：使用 JavaScript SDK 调用 Sora 2.0 (伪代码)
 import openai
 
@@ -52,6 +52,67 @@ response = client.video.generate(
 )
 console.log(response.video_url)
 \`\`\`
+
+\`\`\`vue
+<script setup lang="ts">
+const message = ref('Hello World!')
+
+function updateMessage() {
+  message.value = 'Button clicked!'
+}
+</script>
+
+<template>
+  <div>
+    <h1>{{ message }}</h1>
+    <UButton @click="updateMessage">
+      Click me
+    </UButton>
+  </div>
+</template>
+\`\`\`
+**Strong text**
+*Emphasized text*
+[Nuxt documentation](https://nuxt.com)
+> Nuxt UI automatically adapts to your theme settings, ensuring consistent typography across your entire application.
+ ---
+ Regular markdown with **bold** and *italic* text.
+
+::callout{icon="i-lucide-rocket" color="primary"}
+Use MDC components for rich interactions!
+::
+
+::tabs
+
+:::tabs-item{label="Installation"}
+Use pnpm add @nuxt/ui to install
+:::
+
+:::tabs-item{label="Usage"}
+Import components and use them in your templates
+:::
+
+::
+
+::code-group
+
+\`\`\`bash [pnpm]
+pnpm add @nuxt/ui
+\`\`\`
+
+\`\`\`bash [yarn]
+yarn add @nuxt/ui
+\`\`\`
+
+\`\`\`bash [npm]
+npm install @nuxt/ui
+\`\`\`
+
+\`\`\`bash [bun]
+bun add @nuxt/ui
+\`\`\`
+
+::
         `,
       },
       {
