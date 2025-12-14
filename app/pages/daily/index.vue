@@ -7,7 +7,7 @@
 
       <div class="min-h-[40rem] space-y-4">
         <NuxtLink
-          v-for="item in paginatedNews"
+          v-for="item in dailyNews"
           :key="item.id"
           :to="`/daily/${item.id}`"
           class="group flex flex-col gap-4 border-b border-gray-200 pb-3 last:border-0 md:flex-row dark:border-gray-800"
@@ -51,7 +51,7 @@
           v-model:page="page"
           active-color="neutral"
           active-variant="solid"
-          :total="dailyNews.length"
+          :total="totalCount"
           :items-per-page="itemsPerPage"
         />
       </div>
@@ -68,6 +68,7 @@ import type { DailyNewsItem } from '~/types/daily'
 const page = ref(1)
 const itemsPerPage = ref(5) // Updated to 5 items per page
 const dailyNews = ref<DailyNewsItem[]>([])
+const totalCount = ref(0)
 const loading = ref(false)
 
 /**
@@ -76,8 +77,12 @@ const loading = ref(false)
 const loadNews = async () => {
   loading.value = true
   try {
-    const data = await fetchDailyNews()
-    dailyNews.value = data
+    const { items, total } = await fetchDailyNews({
+      page: page.value,
+      pageSize: itemsPerPage.value,
+    })
+    dailyNews.value = items
+    totalCount.value = total
   } catch (e) {
     console.error('Failed to load daily news', e)
   } finally {
@@ -89,17 +94,9 @@ onMounted(() => {
   loadNews()
 })
 
-/**
- * Computed property for current page items
- */
-const paginatedNews = computed(() => {
-  const start = (page.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return dailyNews.value.slice(start, end)
-})
-
 // Scroll to top when page changes
 watch(page, () => {
+  loadNews()
   if (import.meta.client) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }

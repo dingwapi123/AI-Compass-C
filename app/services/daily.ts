@@ -2,23 +2,18 @@ import type { DailyNewsItem } from '~/types/daily'
 
 /**
  * 获取 AI 日报
- * @param date - 可选日期
- * @returns Promise<DailyNewsItem[]>
+ * @param params - 查询参数 (page, pageSize, date)
+ * @returns Promise<{ items: DailyNewsItem[], total: number }>
  */
-export const fetchDailyNews = async (date?: Date): Promise<DailyNewsItem[]> => {
-  let dateParam = ''
-  if (date) {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    dateParam = `${year}-${month}-${day}`
-  }
-
+export const fetchDailyNews = async (params: { page?: number; pageSize?: number; date?: string } = {}): Promise<{ items: DailyNewsItem[], total: number }> => {
   try {
-    const response = await $fetch<{ items: DailyNewsItem[] }>('/api/daily', {
-      query: dateParam ? { date: dateParam } : undefined,
+    const response = await $fetch<{ items: DailyNewsItem[], total: number }>('/api/daily', {
+      query: params,
     })
-    return response.items || []
+    return {
+      items: response.items || [],
+      total: response.total || 0
+    }
   } catch (error) {
     console.error('Failed to fetch daily news:', error)
     throw error

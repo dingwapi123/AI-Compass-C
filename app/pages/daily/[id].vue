@@ -33,18 +33,14 @@ const dailyItem = ref<DailyNewsItem | null>(null)
 
 onMounted(async () => {
   try {
-    const newsList = await fetchDailyNews()
-    const item = newsList.find((i) => String(i.id) === id)
-
-    if (item) {
-      dailyItem.value = item
+    // 尝试直接通过日期 ID 获取
+    const { items } = await fetchDailyNews({ date: id })
+    if (items && items.length > 0) {
+      dailyItem.value = items[0] || null
     } else {
-      // Fallback if not found in recent list (or handle 404)
-      dailyItem.value = {
-        id: id,
-        date: '2025-12-13',
-        content: '',
-      }
+      // 如果没有找到，可能是旧链接或格式错误，尝试作为普通分页获取（后备方案）
+      // 或者直接显示 404
+      console.warn('Daily report not found for date:', id)
     }
   } catch (e) {
     console.error('Failed to load daily news detail', e)
