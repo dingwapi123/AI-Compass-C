@@ -42,7 +42,7 @@ const columns = [
     label: '社区',
     children: [
       { label: '关于我们', to: '/about' },
-      { label: 'GitHub', to: 'https://github.com', target: '_blank' },
+      { label: 'GitHub', to: 'https://github.com/dingwapi123/AI-Compass', target: '_blank' },
     ],
   },
 ]
