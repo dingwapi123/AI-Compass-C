@@ -58,12 +58,11 @@
             <div class="flex items-center gap-4">
               <UAvatar
                 :src="
-                  (tool.images && tool.images[0]) ||
-                  `https://ui-avatars.com/api/?name=${tool.name}&background=random`
+                  tool.icon || `https://ui-avatars.com/api/?name=${tool.name}&background=random`
                 "
                 :alt="tool.name"
                 size="md"
-                class="rounded-lg"
+                class="rounded-none"
               />
               <div class="min-w-0 flex-1">
                 <h3
