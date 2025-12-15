@@ -125,16 +125,16 @@
           <div class="space-y-6 lg:col-span-4">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">最新资讯</h2>
 
-            <div class="space-y-4">
+            <div class="space-y-3">
               <div
                 v-for="(news, index) in latestNews"
                 :key="index"
-                class="hover:border-primary-200 dark:hover:border-primary-800 cursor-pointer rounded-xl border border-gray-300 bg-white p-5 transition-colors dark:border-gray-800 dark:bg-gray-900"
+                class="hover:border-primary-200 dark:hover:border-primary-800 cursor-pointer rounded-xl border border-gray-300 bg-white p-4 transition-colors dark:border-gray-800 dark:bg-gray-900"
               >
                 <h3 class="mb-2 line-clamp-2 font-bold text-gray-900 dark:text-white">
                   {{ news.title }}
                 </h3>
-                <p class="mb-3 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+                <p class="mb-2 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
                   {{ news.content }}
                 </p>
                 <div class="text-xs text-gray-400">
@@ -227,8 +227,8 @@ const { data: latestNews } = await useAsyncData(
   async () => {
     // 获取今天的快讯
     const news = await fetchNewsByDate(new Date())
-    // 只取前 4 条
-    return news.slice(0, 4)
+    // 只取前 3 条，保持左右高度平衡
+    return news.slice(0, 3)
   },
   {
     default: () => [],
