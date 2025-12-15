@@ -56,14 +56,7 @@
             class="group block rounded-md border border-gray-300 bg-white p-4 transition-shadow hover:border-gray-800 dark:border-gray-800 dark:bg-gray-900 hover:dark:border-gray-300"
           >
             <div class="flex items-center gap-4">
-              <UAvatar
-                :src="
-                  tool.icon || `https://ui-avatars.com/api/?name=${tool.name}&background=random`
-                "
-                :alt="tool.name"
-                size="md"
-                class="rounded-none"
-              />
+              <UAvatar :src="tool.icon" :alt="tool.name" size="md" class="rounded-none" />
               <div class="min-w-0 flex-1">
                 <h3
                   class="group-hover:text-primary-500 truncate font-semibold text-gray-900 transition-colors dark:text-white"
@@ -142,10 +135,10 @@
                   {{ news.title }}
                 </h3>
                 <p class="mb-3 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
-                  {{ news.summary }}
+                  {{ news.content }}
                 </p>
                 <div class="text-xs text-gray-400">
-                  {{ news.date }}
+                  {{ news.time }}
                 </div>
               </div>
             </div>
@@ -158,6 +151,7 @@
 
 <script setup lang="ts">
 import { fetchRandomTools, fetchToolsByCategory } from '~/services/tools'
+import { fetchNewsByDate } from '~/services/news'
 import type { Tool } from '~/types'
 import { storeToRefs } from 'pinia'
 
@@ -227,22 +221,17 @@ const handleSearch = () => {
   }
 }
 
-// Mock News Data
-const latestNews = [
-  {
-    title: 'OpenAI 发布全新旗舰模型 GPT-4o',
-    summary: '速度更快、功能更强，并免费向所有用户开放。',
-    date: '2024年5月13日',
+// 5. News Logic
+const { data: latestNews } = await useAsyncData(
+  'home-latest-news',
+  async () => {
+    // 获取今天的快讯
+    const news = await fetchNewsByDate(new Date())
+    // 只取前 4 条
+    return news.slice(0, 4)
   },
   {
-    title: 'Google I/O 展示了跨产品的重大AI更新',
-    summary: 'Gemini模型已集成到 Workspace、Android 和搜索中。',
-    date: '2024年5月14日',
-  },
-  {
-    title: 'Adobe 在 Photoshop 中引入新的生成填充功能',
-    summary: '为专业图像编辑扩展了AI功能。',
-    date: '2024年5月10日',
-  },
-]
+    default: () => [],
+  }
+)
 </script>
