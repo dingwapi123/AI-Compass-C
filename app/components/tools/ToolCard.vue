@@ -10,7 +10,7 @@
               :src="tool.icon || (tool.images && tool.images[0]) || ''"
               :alt="tool.name"
               size="md"
-              class="rounded-xl bg-gray-50 dark:bg-gray-800"
+              class="rounded-none bg-gray-50 dark:bg-gray-800"
             />
             <div>
               <h3
